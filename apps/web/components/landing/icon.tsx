@@ -9,7 +9,11 @@ export type IconName =
   | "issue"
   | "mentor"
   | "trophy"
-  | "calendar";
+  | "calendar"
+  | "clock"
+  | "sprout"
+  | "chart"
+  | "award";
 
 // Renders an icon from the shared sprite in <IconSprite />.
 export function Icon({

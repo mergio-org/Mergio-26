@@ -23,9 +23,11 @@ export function About() {
             Everything you need to go from your first issue to your first merge.
           </p>
           <ol className="offer-list reveal">
-            {about.offers.map((offer, i) => (
+            {about.offers.map((offer) => (
               <li key={offer.title}>
-                <span className="n">{String(i + 1).padStart(2, "0")}</span>
+                <span className="offer-icon">
+                  <Icon name={offer.icon} size={18} />
+                </span>
                 <h3>{offer.title}</h3>
                 <p>{offer.body}</p>
               </li>

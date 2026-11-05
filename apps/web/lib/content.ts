@@ -35,22 +35,27 @@ export const about = {
     {
       title: "Real repositories",
       body: "15–25 active open-source projects, each with a working setup guide and issues labelled by difficulty.",
+      icon: "repo" as const,
     },
     {
       title: "Reviews within 48 hours",
       body: "Mentors review your pull requests and answer questions on Discord, so you are never stuck for long.",
+      icon: "clock" as const,
     },
     {
       title: "Made for first-timers",
       body: "Onboarding sessions on Git, GitHub and your first pull request, plus Level 1 issues to start with.",
+      icon: "sprout" as const,
     },
     {
       title: "A leaderboard that counts merges",
       body: "Merged pull requests are tracked from GitHub automatically. Overall, weekly, college and first-timer rankings.",
+      icon: "chart" as const,
     },
     {
       title: "Certificates for everyone who ships",
       body: "One merged pull request earns you a certificate. The top contributors win prizes.",
+      icon: "award" as const,
     },
   ],
   roles: [
@@ -128,6 +133,41 @@ export const rules = [
   "Up to 2 assigned issues at a time",
   "Spam leads to disqualification",
 ];
+
+// Sample rows for the leaderboard preview in Scoring. Illustrative only, labelled "Sample" in the UI.
+export const leaderboardPreview = {
+  tabs: ["Overall", "Weekly", "College", "First-timers"],
+  rows: [
+    { handle: "aurora-dev", merged: 14, points: 420 },
+    { handle: "pinecone", merged: 12, points: 385 },
+    { handle: "frostbyte", merged: 11, points: 340 },
+    { handle: "you", merged: 9, points: 295, gained: 25 },
+    { handle: "icicle-js", merged: 10, points: 270 },
+  ] as { handle: string; merged: number; points: number; gained?: number }[],
+};
+
+// Sample issues for the repository mock in the Maintainers section.
+export const repoPreview = {
+  name: "your-org/your-project",
+  openIssues: 12,
+  pullRequests: 4,
+  issues: [
+    {
+      title: "Fix broken link in the setup guide",
+      labels: ["mergio:level-1", "good first issue"],
+    },
+    {
+      title: "Add keyboard shortcuts to the editor",
+      labels: ["mergio:level-2"],
+    },
+    { title: "Cache API responses on the client", labels: ["mergio:level-3"] },
+    {
+      title: "Improve README badges",
+      labels: ["mergio:level-1"],
+      merged: true,
+    },
+  ] as { title: string; labels: string[]; merged?: boolean }[],
+};
 
 // Add `when` (e.g. "Dec 1") once a date is fixed; until then the stage number is shown.
 // Mark the stage in progress with `active: true`; earlier stages render as done.

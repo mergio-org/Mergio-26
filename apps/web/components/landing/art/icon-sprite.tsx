@@ -133,6 +133,52 @@ export function IconSprite() {
             <path d="M3.5 10h17M8 3v4M16 3v4" />
           </g>
         </symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3.5 2" />
+          </g>
+        </symbol>
+        <symbol id="i-sprout" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 21v-8M12 13C12 9 9 6 4 6c0 4 3 7 8 7ZM12 11c0-3 2.5-5.5 7-5.5 0 3.5-2.5 5.5-7 5.5Z" />
+          </g>
+        </symbol>
+        <symbol id="i-chart" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M4 20h16M7 16v-4M12 16V7M17 16v-6" />
+          </g>
+        </symbol>
+        <symbol id="i-award" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="9" r="5.5" />
+            <path d="M8.6 13.3 7 21l5-2.5 5 2.5-1.6-7.7" />
+          </g>
+        </symbol>
       </defs>
     </svg>
   );
