@@ -1,5 +1,4 @@
 import { faqs } from "@/lib/content";
-import { SidePines } from "./art/side-pines";
 import { Icon } from "./icon";
 import { SectionHead } from "./section-head";
 
@@ -7,7 +6,6 @@ import { SectionHead } from "./section-head";
 export function Faq() {
   return (
     <section className="section" id="faq">
-      <SidePines side="right" />
       <div className="wrap faq">
         <SectionHead eyebrow="FAQ" title="Questions," accent="answered.">
           Still unsure? Ask us on Discord.

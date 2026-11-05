@@ -30,6 +30,17 @@
   --panel-shadow: 0 24px 48px -32px rgba(0, 0, 0, .8);
   --panel-glow: rgba(140, 203, 255, .16);
   --ice-faint: rgba(140, 203, 255, .06);
+  /* scene art below the hero (s-* classes on the SVG paths) */
+  --scene-far: #111A2B;
+  --scene-near: #0E1626;
+  --scene-base: #0B1120;
+  --scene-pine: #172234;
+  --scene-pine-far: #1E2B41;
+  --scene-snow: #DCEBFA;
+  --scene-snow-o: .25;
+  --scene-cap-o: .4;
+  --scene-rim: #DCEBFA;
+  --scene-rim-o: .22;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 96px; }
@@ -128,12 +139,28 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='640'><circle cx='296' cy='239' r='0.6' fill='%23EAF2FF' opacity='0.31'/><circle cx='433' cy='217' r='0.8' fill='%23EAF2FF' opacity='0.74'/><circle cx='52' cy='355' r='1' fill='%23EAF2FF' opacity='0.62'/><circle cx='466' cy='108' r='0.8' fill='%23EAF2FF' opacity='0.77'/><circle cx='270' cy='108' r='0.5' fill='%23EAF2FF' opacity='0.27'/><circle cx='324' cy='591' r='1' fill='%23EAF2FF' opacity='0.24'/><circle cx='441' cy='505' r='0.5' fill='%23EAF2FF' opacity='0.75'/><circle cx='131' cy='144' r='0.8' fill='%23EAF2FF' opacity='0.73'/><circle cx='494' cy='583' r='0.8' fill='%23EAF2FF' opacity='0.37'/><circle cx='518' cy='128' r='0.5' fill='%23EAF2FF' opacity='0.73'/><circle cx='35' cy='242' r='0.8' fill='%23EAF2FF' opacity='0.28'/><circle cx='152' cy='471' r='0.5' fill='%23EAF2FF' opacity='0.78'/><circle cx='2' cy='489' r='0.6' fill='%23EAF2FF' opacity='0.74'/><circle cx='130' cy='5' r='0.5' fill='%23EAF2FF' opacity='0.28'/><circle cx='587' cy='321' r='1' fill='%23EAF2FF' opacity='0.50'/><circle cx='589' cy='269' r='0.8' fill='%23EAF2FF' opacity='0.32'/><circle cx='490' cy='449' r='0.6' fill='%23EAF2FF' opacity='0.30'/><circle cx='390' cy='613' r='0.5' fill='%23EAF2FF' opacity='0.36'/><circle cx='437' cy='545' r='1.2' fill='%23EAF2FF' opacity='0.36'/><circle cx='637' cy='639' r='0.5' fill='%23EAF2FF' opacity='0.72'/><circle cx='258' cy='580' r='0.6' fill='%23EAF2FF' opacity='0.57'/><circle cx='28' cy='234' r='1.2' fill='%23EAF2FF' opacity='0.51'/><circle cx='362' cy='440' r='0.7' fill='%23EAF2FF' opacity='0.27'/><circle cx='564' cy='234' r='0.6' fill='%23EAF2FF' opacity='0.44'/><circle cx='631' cy='368' r='0.5' fill='%23EAF2FF' opacity='0.43'/><circle cx='389' cy='0' r='0.5' fill='%23EAF2FF' opacity='0.33'/><circle cx='284' cy='208' r='0.5' fill='%23EAF2FF' opacity='0.38'/><circle cx='182' cy='331' r='0.5' fill='%23EAF2FF' opacity='0.22'/><circle cx='500' cy='517' r='0.8' fill='%23EAF2FF' opacity='0.41'/><circle cx='498' cy='362' r='0.5' fill='%23EAF2FF' opacity='0.46'/><circle cx='148' cy='617' r='0.8' fill='%23EAF2FF' opacity='0.51'/><circle cx='612' cy='359' r='0.6' fill='%23EAF2FF' opacity='0.60'/><circle cx='109' cy='540' r='0.7' fill='%23EAF2FF' opacity='0.22'/><circle cx='601' cy='518' r='0.7' fill='%23EAF2FF' opacity='0.77'/><circle cx='631' cy='388' r='0.5' fill='%23EAF2FF' opacity='0.23'/><circle cx='288' cy='503' r='0.7' fill='%23EAF2FF' opacity='0.57'/><circle cx='619' cy='227' r='0.6' fill='%23EAF2FF' opacity='0.49'/><circle cx='178' cy='616' r='1.2' fill='%23EAF2FF' opacity='0.53'/><circle cx='445' cy='42' r='0.8' fill='%23EAF2FF' opacity='0.29'/><circle cx='360' cy='509' r='1' fill='%23EAF2FF' opacity='0.73'/><circle cx='108' cy='458' r='1' fill='%23EAF2FF' opacity='0.73'/><circle cx='316' cy='64' r='0.5' fill='%23EAF2FF' opacity='0.37'/><circle cx='82' cy='511' r='0.5' fill='%23EAF2FF' opacity='0.30'/><circle cx='505' cy='550' r='0.6' fill='%23EAF2FF' opacity='0.31'/><circle cx='292' cy='358' r='0.8' fill='%23EAF2FF' opacity='0.25'/><circle cx='351' cy='379' r='0.7' fill='%23EAF2FF' opacity='0.52'/><circle cx='602' cy='18' r='1' fill='%23EAF2FF' opacity='0.73'/><circle cx='348' cy='335' r='1' fill='%23EAF2FF' opacity='0.58'/><circle cx='510' cy='562' r='1' fill='%23EAF2FF' opacity='0.53'/><circle cx='192' cy='464' r='1.2' fill='%23EAF2FF' opacity='0.28'/><circle cx='64' cy='315' r='0.5' fill='%23EAF2FF' opacity='0.49'/><circle cx='408' cy='34' r='1' fill='%23EAF2FF' opacity='0.22'/><circle cx='156' cy='294' r='0.7' fill='%23EAF2FF' opacity='0.69'/><circle cx='467' cy='400' r='0.6' fill='%23EAF2FF' opacity='0.22'/><circle cx='382' cy='392' r='1.2' fill='%23EAF2FF' opacity='0.45'/></svg>"); background-size: 640px 640px; }
 .night > .section, .night > .final, .night > .strip { position: relative; }
 .night .aurora.soft { top: -80px; height: 360px; opacity: .3; z-index: -1; }
-/* Pines live in the gutter beside the content column (text starts 556px from the centre),
-   so they shrink with the gutter instead of sliding under text. */
-.side-pines { position: absolute; bottom: 0; width: clamp(0px, calc(50% - 550px), 260px); height: auto; aspect-ratio: 4 / 5; z-index: -1; pointer-events: none; opacity: .9; }
-.side-pines.left { right: calc(50% + 570px); }
-.side-pines.right { left: calc(50% + 570px); transform: scaleX(-1); }
-.ridge { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 220px; z-index: -1; pointer-events: none; opacity: .7; }
+.night .aurora.alt { animation-direction: alternate-reverse;
+  background: radial-gradient(38% 34% at 28% 50%, rgba(150, 120, 255, .16), transparent 70%), radial-gradient(34% 30% at 60% 42%, rgba(70, 210, 190, .18), transparent 70%), radial-gradient(30% 28% at 82% 60%, rgba(90, 150, 255, .16), transparent 70%); }
+
+/* Snow below the hero: a viewport-sized canvas, sticky inside a wrapper that spans the whole
+   night background. Fainter down the middle so it never sits loudly behind text. */
+.night-snow { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.night-snow canvas { position: sticky; top: 0; display: block; width: 100%; height: 100vh;
+  -webkit-mask-image: linear-gradient(90deg, #000, rgba(0, 0, 0, .4) 30%, rgba(0, 0, 0, .4) 70%, #000); mask-image: linear-gradient(90deg, #000, rgba(0, 0, 0, .4) 30%, rgba(0, 0, 0, .4) 70%, #000); }
+
+/* Scene dividers (ridge, drift). Paths use s-* classes fed by the --scene-* tokens,
+   so light mode is a token swap instead of fill-matching overrides. */
+.scene { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 220px; z-index: -1; pointer-events: none; }
+.ridge { opacity: .7; }
+.drift { opacity: .9; -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent); mask-image: linear-gradient(180deg, #000 72%, transparent); }
+.s-far { fill: var(--scene-far); }
+.s-near { fill: var(--scene-near); }
+.s-base { fill: var(--scene-base); }
+.s-pine { fill: var(--scene-pine); }
+.s-pine-far { fill: var(--scene-pine-far); }
+.s-snow { fill: var(--scene-snow); opacity: var(--scene-snow-o); }
+.s-cap { fill: var(--scene-snow); opacity: var(--scene-cap-o); }
+.s-rim { fill: none; stroke: var(--scene-rim); stroke-width: 1.5; opacity: var(--scene-rim-o); }
 .night .final-scene { transform: translateY(40px); opacity: 0; transition: transform 1.2s cubic-bezier(.2, .7, .2, 1), opacity 1.2s ease; }
 .night .final-scene.in { transform: none; opacity: 1; }
 
@@ -316,18 +343,9 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 /* sections in daylight */
 [data-theme="light"] .night { background: linear-gradient(180deg, #F4F8FC 0%, #E9F2FB 25%, #F2F7FC 55%, #E7F0FA 85%, #F4F8FC 100%); }
 [data-theme="light"] .night::before { display: none; }
-[data-theme="light"] .side-pines path[fill="#1B273B"] { fill: #6F89A6; }
-[data-theme="light"] .side-pines path[fill="#172234"] { fill: #56718F; }
-[data-theme="light"] .side-pines path[fill="#1E2B41"] { fill: #839CB6; }
-[data-theme="light"] .side-pines path[fill="#DCEBFA"], [data-theme="light"] .side-pines path[fill="#E6F1FC"] { fill: #FFFFFF; opacity: .95; }
-[data-theme="light"] .ridge path[fill="#111A2B"] { fill: #CAD7E5; }
-[data-theme="light"] .ridge path[fill="#0B1120"] { fill: #EEF4FA; }
-[data-theme="light"] .ridge path[fill="#DCEBFA"] { fill: #FFFFFF; opacity: .9; }
+[data-theme="light"] { --scene-far: #CAD7E5; --scene-near: #F8FBFE; --scene-base: #EEF4FA; --scene-pine: #56718F; --scene-pine-far: #839CB6;
+  --scene-snow: #FFFFFF; --scene-snow-o: .9; --scene-cap-o: .95; --scene-rim: #B9CBE0; --scene-rim-o: .9; }
 
-/* Below this width the gutter is too narrow for pines. */
-@media (max-width: 1279px) {
-  .side-pines { display: none; }
-}
 @media (max-width: 960px) {
   .hero-tree { width: 200px; height: 333px; top: 420px; opacity: .7; }
   .hero-tree.small { display: none; }

@@ -1,11 +1,9 @@
 import { steps } from "@/lib/content";
-import { SidePines } from "./art/side-pines";
 import { SectionHead } from "./section-head";
 
 export function HowItWorks() {
   return (
     <section className="section" id="how">
-      <SidePines side="right" />
       <div className="wrap">
         <SectionHead
           eyebrow="How it works"

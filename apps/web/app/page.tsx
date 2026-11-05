@@ -10,6 +10,7 @@ import { Scoring } from "@/components/landing/scoring";
 import { ScrollEffects } from "@/components/landing/scroll-effects";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
+import { NightSnow } from "@/components/landing/snow";
 import { Timeline } from "@/components/landing/timeline";
 
 export default function HomePage() {
@@ -30,6 +31,8 @@ export default function HomePage() {
           <Faq />
           <FinalCta />
           <OrganiserStrip />
+          {/* Last, so the snow paints in front of the scene art but still behind all content. */}
+          <NightSnow />
         </div>
       </main>
       <SiteFooter />
