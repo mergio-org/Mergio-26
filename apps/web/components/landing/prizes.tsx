@@ -1,11 +1,12 @@
 import { mainPrize, prizes } from "@/lib/content";
-import { SidePines } from "./art/side-pines";
+import { Drift } from "./art/drift";
 import { SectionHead } from "./section-head";
 
 export function Prizes() {
   return (
-    <section className="section" id="prizes">
-      <SidePines side="left" />
+    <section className="section has-scene" id="prizes">
+      <div className="aurora soft" aria-hidden="true" />
+      <Drift />
       <div className="wrap">
         <SectionHead
           eyebrow="Prizes & recognition"

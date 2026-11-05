@@ -5,8 +5,8 @@ import { Horizon } from "./art/horizon";
 import { Moon } from "./art/moon";
 import { Stars } from "./art/stars";
 import { WinterScene } from "./art/winter-scene";
-import { HeroSnow } from "./hero-snow";
 import { Icon } from "./icon";
+import { HeroSnow } from "./snow";
 
 export function Hero() {
   return (

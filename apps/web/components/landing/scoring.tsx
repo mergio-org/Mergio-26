@@ -6,6 +6,7 @@ import { SectionHead } from "./section-head";
 export function Scoring() {
   return (
     <section className="section has-scene" id="scoring">
+      <div className="aurora soft alt" aria-hidden="true" />
       <Ridge />
       <div className="wrap">
         <SectionHead
