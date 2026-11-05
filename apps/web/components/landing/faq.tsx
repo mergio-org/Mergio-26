@@ -9,11 +9,7 @@ export function Faq() {
     <section className="section" id="faq">
       <SidePines side="right" />
       <div className="wrap faq">
-        <SectionHead
-          eyebrow="FAQ"
-          title="Questions, answered."
-          style={{ marginBottom: 0 }}
-        >
+        <SectionHead eyebrow="FAQ" title="Questions, answered.">
           Still unsure? Ask us on Discord.
         </SectionHead>
         <div className="faq-list reveal">

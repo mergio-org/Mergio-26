@@ -97,15 +97,19 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 #heroSnow { position: absolute; left: 0; top: 0; width: 100%; height: 900px; z-index: -1; pointer-events: none; -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 22%, transparent 36%, transparent 64%, #000 78%, #000 100%); mask-image: linear-gradient(90deg, #000 0%, #000 22%, transparent 36%, transparent 64%, #000 78%, #000 100%); }
 
 /* ---------- winter night across all sections ---------- */
-.night { position: relative; isolation: isolate;
+/* overflow-x: clip (not hidden) stops wide glows and pines from widening the mobile viewport
+   without creating a scroll container, so the sticky "What you get" label keeps working. */
+.night { position: relative; isolation: isolate; overflow-x: clip;
   background: linear-gradient(180deg, #0B0D12 0%, #0C1324 12%, #0B1120 40%, #0D1528 70%, #0B0D12 100%); }
 .night::before { content: ""; position: absolute; inset: 0; z-index: -2; pointer-events: none; opacity: .55;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='640'><circle cx='296' cy='239' r='0.6' fill='%23EAF2FF' opacity='0.31'/><circle cx='433' cy='217' r='0.8' fill='%23EAF2FF' opacity='0.74'/><circle cx='52' cy='355' r='1' fill='%23EAF2FF' opacity='0.62'/><circle cx='466' cy='108' r='0.8' fill='%23EAF2FF' opacity='0.77'/><circle cx='270' cy='108' r='0.5' fill='%23EAF2FF' opacity='0.27'/><circle cx='324' cy='591' r='1' fill='%23EAF2FF' opacity='0.24'/><circle cx='441' cy='505' r='0.5' fill='%23EAF2FF' opacity='0.75'/><circle cx='131' cy='144' r='0.8' fill='%23EAF2FF' opacity='0.73'/><circle cx='494' cy='583' r='0.8' fill='%23EAF2FF' opacity='0.37'/><circle cx='518' cy='128' r='0.5' fill='%23EAF2FF' opacity='0.73'/><circle cx='35' cy='242' r='0.8' fill='%23EAF2FF' opacity='0.28'/><circle cx='152' cy='471' r='0.5' fill='%23EAF2FF' opacity='0.78'/><circle cx='2' cy='489' r='0.6' fill='%23EAF2FF' opacity='0.74'/><circle cx='130' cy='5' r='0.5' fill='%23EAF2FF' opacity='0.28'/><circle cx='587' cy='321' r='1' fill='%23EAF2FF' opacity='0.50'/><circle cx='589' cy='269' r='0.8' fill='%23EAF2FF' opacity='0.32'/><circle cx='490' cy='449' r='0.6' fill='%23EAF2FF' opacity='0.30'/><circle cx='390' cy='613' r='0.5' fill='%23EAF2FF' opacity='0.36'/><circle cx='437' cy='545' r='1.2' fill='%23EAF2FF' opacity='0.36'/><circle cx='637' cy='639' r='0.5' fill='%23EAF2FF' opacity='0.72'/><circle cx='258' cy='580' r='0.6' fill='%23EAF2FF' opacity='0.57'/><circle cx='28' cy='234' r='1.2' fill='%23EAF2FF' opacity='0.51'/><circle cx='362' cy='440' r='0.7' fill='%23EAF2FF' opacity='0.27'/><circle cx='564' cy='234' r='0.6' fill='%23EAF2FF' opacity='0.44'/><circle cx='631' cy='368' r='0.5' fill='%23EAF2FF' opacity='0.43'/><circle cx='389' cy='0' r='0.5' fill='%23EAF2FF' opacity='0.33'/><circle cx='284' cy='208' r='0.5' fill='%23EAF2FF' opacity='0.38'/><circle cx='182' cy='331' r='0.5' fill='%23EAF2FF' opacity='0.22'/><circle cx='500' cy='517' r='0.8' fill='%23EAF2FF' opacity='0.41'/><circle cx='498' cy='362' r='0.5' fill='%23EAF2FF' opacity='0.46'/><circle cx='148' cy='617' r='0.8' fill='%23EAF2FF' opacity='0.51'/><circle cx='612' cy='359' r='0.6' fill='%23EAF2FF' opacity='0.60'/><circle cx='109' cy='540' r='0.7' fill='%23EAF2FF' opacity='0.22'/><circle cx='601' cy='518' r='0.7' fill='%23EAF2FF' opacity='0.77'/><circle cx='631' cy='388' r='0.5' fill='%23EAF2FF' opacity='0.23'/><circle cx='288' cy='503' r='0.7' fill='%23EAF2FF' opacity='0.57'/><circle cx='619' cy='227' r='0.6' fill='%23EAF2FF' opacity='0.49'/><circle cx='178' cy='616' r='1.2' fill='%23EAF2FF' opacity='0.53'/><circle cx='445' cy='42' r='0.8' fill='%23EAF2FF' opacity='0.29'/><circle cx='360' cy='509' r='1' fill='%23EAF2FF' opacity='0.73'/><circle cx='108' cy='458' r='1' fill='%23EAF2FF' opacity='0.73'/><circle cx='316' cy='64' r='0.5' fill='%23EAF2FF' opacity='0.37'/><circle cx='82' cy='511' r='0.5' fill='%23EAF2FF' opacity='0.30'/><circle cx='505' cy='550' r='0.6' fill='%23EAF2FF' opacity='0.31'/><circle cx='292' cy='358' r='0.8' fill='%23EAF2FF' opacity='0.25'/><circle cx='351' cy='379' r='0.7' fill='%23EAF2FF' opacity='0.52'/><circle cx='602' cy='18' r='1' fill='%23EAF2FF' opacity='0.73'/><circle cx='348' cy='335' r='1' fill='%23EAF2FF' opacity='0.58'/><circle cx='510' cy='562' r='1' fill='%23EAF2FF' opacity='0.53'/><circle cx='192' cy='464' r='1.2' fill='%23EAF2FF' opacity='0.28'/><circle cx='64' cy='315' r='0.5' fill='%23EAF2FF' opacity='0.49'/><circle cx='408' cy='34' r='1' fill='%23EAF2FF' opacity='0.22'/><circle cx='156' cy='294' r='0.7' fill='%23EAF2FF' opacity='0.69'/><circle cx='467' cy='400' r='0.6' fill='%23EAF2FF' opacity='0.22'/><circle cx='382' cy='392' r='1.2' fill='%23EAF2FF' opacity='0.45'/></svg>"); background-size: 640px 640px; }
 .night > .section, .night > .final, .night > .strip { position: relative; }
 .night .aurora.soft { top: -80px; height: 360px; opacity: .3; z-index: -1; }
-.side-pines { position: absolute; bottom: 0; width: 260px; height: 325px; z-index: -1; pointer-events: none; opacity: .9; }
-.side-pines.left { left: max(-20px, calc(50% - 760px)); }
-.side-pines.right { right: max(-20px, calc(50% - 760px)); transform: scaleX(-1); }
+/* Pines live in the gutter beside the content column (text starts 556px from the centre),
+   so they shrink with the gutter instead of sliding under text. */
+.side-pines { position: absolute; bottom: 0; width: clamp(0px, calc(50% - 550px), 260px); height: auto; aspect-ratio: 4 / 5; z-index: -1; pointer-events: none; opacity: .9; }
+.side-pines.left { right: calc(50% + 570px); }
+.side-pines.right { left: calc(50% + 570px); transform: scaleX(-1); }
 .night #scoring { padding-bottom: 260px; }
 .ridge { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 220px; z-index: -1; pointer-events: none; opacity: .7; }
 .night .final-scene { transform: translateY(40px); opacity: 0; transition: transform 1.2s cubic-bezier(.2, .7, .2, 1), opacity 1.2s ease; }
@@ -143,9 +147,8 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .offer-list p { color: var(--muted); font-size: 16px; }
 .offer-list li:hover .n { color: var(--ice); }
 
-.roles { margin-top: 96px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.role { display: flex; flex-direction: column; padding: 32px 32px 36px; }
-.role:first-child { padding-left: 0; }
+.roles { margin-top: 96px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.role { display: flex; flex-direction: column; padding: 32px 0 36px; }
 .role .who { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
 .role h3 { margin-top: 14px; font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
 .role p { margin-top: 8px; color: var(--muted); font-size: 15px; }
@@ -202,9 +205,11 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 .checks li { display: flex; gap: 12px; color: var(--muted); font-size: 15px; }
 .checks svg { color: var(--ice); flex: none; margin-top: 3px; }
+.maint .hero-cta { justify-content: flex-start; margin-top: 28px; }
 
 /* faq */
 .faq { display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; }
+.faq .section-head { margin-bottom: 0; }
 summary { list-style: none; cursor: pointer; padding: 22px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 17px; font-weight: 500; }
 summary::-webkit-details-marker { display: none; }
 summary .chev { color: var(--dim); transition: transform .2s; flex: none; }
@@ -250,7 +255,7 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 [data-theme="light"] .pill b { color: #FFFFFF; }
 [data-theme="light"] .pill { background: rgba(255, 255, 255, .7); }
 [data-theme="light"] .wordmark { background: linear-gradient(180deg, #0E1726 30%, #1F5FB8 100%); -webkit-background-clip: text; background-clip: text; }
-[data-theme="light"] .card, [data-theme="light"] .score, [data-theme="light"] .prize, [data-theme="light"] .maint, [data-theme="light"] .rules { box-shadow: 0 12px 32px -20px rgba(30, 60, 110, .28); }
+[data-theme="light"] .score, [data-theme="light"] .prize, [data-theme="light"] .maint, [data-theme="light"] .rules { box-shadow: 0 12px 32px -20px rgba(30, 60, 110, .28); }
 [data-theme="light"] .places div { background: rgba(255, 255, 255, .8); }
 [data-theme="light"] .prize.main { background: linear-gradient(180deg, rgba(31, 111, 209, .08), rgba(31, 111, 209, .02) 60%), #FFFFFF; border-color: rgba(31, 111, 209, .3); }
 [data-theme="light"] .final::before { background: radial-gradient(closest-side, rgba(255, 214, 170, .35), transparent); }
@@ -293,8 +298,11 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 [data-theme="light"] .ridge path[fill="#0B1120"] { fill: #EEF4FA; }
 [data-theme="light"] .ridge path[fill="#DCEBFA"] { fill: #FFFFFF; opacity: .9; }
 
-@media (max-width: 960px) {
+/* Below this width the gutter is too narrow for pines. */
+@media (max-width: 1279px) {
   .side-pines { display: none; }
+}
+@media (max-width: 960px) {
   .hero-tree { width: 200px; height: 333px; top: 420px; opacity: .7; }
   .hero-tree.small { display: none; }
   .aurora { width: 1000px; }
@@ -304,8 +312,8 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .offer-label { position: static; }
   .offer-list li { grid-template-columns: 48px minmax(0, 1fr); gap: 6px 16px; }
   .offer-list p { grid-column: 2; }
-  .roles { grid-template-columns: 1fr; margin-top: 72px; }
-  .role, .role:first-child { padding: 24px 0; }
+  .roles { grid-template-columns: 1fr; margin-top: 72px; gap: 0; }
+  .role { padding: 24px 0; }
   .steps { grid-template-columns: 1fr 1fr; gap: 32px 16px; }
   .timeline { grid-template-columns: 1fr; border-top: 0; border-left: 1px solid var(--border-strong); margin-left: 6px; }
   .timeline li { padding: 0 0 28px 28px; }
@@ -339,5 +347,5 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .reveal { opacity: 1; transform: none; transition: none; }
   .aurora, .stars .tw, .day-clouds svg { animation: none; }
   .night .final-scene { transform: none; opacity: 1; transition: none; }
-  .card, .btn, summary .chev, .role a span { transition: none; }
+  .btn, summary .chev, .role a span { transition: none; }
 }
