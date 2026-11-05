@@ -5,7 +5,7 @@ export function Timeline() {
   return (
     <section className="section" id="timeline">
       <div className="wrap">
-        <SectionHead eyebrow="Timeline" title="How the program runs.">
+        <SectionHead eyebrow="Timeline" title="How the program" accent="runs.">
           Exact dates will be announced soon.
         </SectionHead>
         <ol className="timeline reveal">

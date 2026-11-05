@@ -1,14 +1,17 @@
 import { links, maintainerChecks } from "@/lib/content";
 import { Icon } from "./icon";
+import { Eyebrow } from "./section-head";
 
 export function Maintainers() {
   return (
     <section className="section" id="maintainers">
       <div className="wrap">
-        <div className="maint reveal">
+        <div className="maint panel panel-featured reveal">
           <div>
-            <span className="eyebrow">For maintainers</span>
-            <h2>Bring your project to Mergio.</h2>
+            <Eyebrow>For maintainers</Eyebrow>
+            <h2>
+              Bring your project to <span>Mergio.</span>
+            </h2>
             <p>
               Get motivated contributors working on your open issues for a full
               month, with mentors from our side to help with reviews.

@@ -59,6 +59,7 @@ export const about = {
       body: "Any college, any year, any skill level. Free to join.",
       cta: "Register",
       href: links.register,
+      icon: "pr" as const,
     },
     {
       who: "Maintainers",
@@ -66,6 +67,7 @@ export const about = {
       body: "Get a month of motivated contributors working on your open issues.",
       cta: "Submit a project",
       href: links.submitProject,
+      icon: "repo" as const,
     },
     {
       who: "Seniors & alumni",
@@ -73,6 +75,7 @@ export const about = {
       body: "Review pull requests and help newcomers through their first merge.",
       cta: "Become a mentor",
       href: links.mentor,
+      icon: "mentor" as const,
     },
   ],
 };

@@ -60,6 +60,79 @@ export function IconSprite() {
             <path d="M6 8.5v7M8.4 7.3l7.2 8.2" />
           </g>
         </symbol>
+        <symbol id="i-pr" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="6" cy="6" r="2.5" />
+            <circle cx="6" cy="18" r="2.5" />
+            <circle cx="18" cy="18" r="2.5" />
+            <path d="M6 8.5v7M18 15.5V9a3 3 0 0 0-3-3h-4M13.5 3.5 11 6l2.5 2.5" />
+          </g>
+        </symbol>
+        <symbol id="i-repo" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5 19.5v-14A2.5 2.5 0 0 1 7.5 3H19v14H7.5A2.5 2.5 0 0 0 5 19.5Zm0 0A2.5 2.5 0 0 0 7.5 22H19v-5" />
+            <path d="M9 3v7l2-1.5 2 1.5V3" />
+          </g>
+        </symbol>
+        <symbol id="i-issue" viewBox="0 0 24 24">
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          />
+          <circle cx="12" cy="12" r="2" fill="currentColor" />
+        </symbol>
+        <symbol id="i-mentor" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="9" cy="8" r="3.5" />
+            <path d="M2.5 20.5a6.5 6.5 0 0 1 13 0M16 4.7a3.5 3.5 0 0 1 0 6.6M18.5 14.6a6.5 6.5 0 0 1 3 5.9" />
+          </g>
+        </symbol>
+        <symbol id="i-trophy" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M7 3.5h10V9a5 5 0 0 1-10 0V3.5Z" />
+            <path d="M7 5.5H4.5a3 3 0 0 0 3.2 5M17 5.5h2.5a3 3 0 0 1-3.2 5M12 14v3.5M9.5 17.5h5V21h-5ZM8 21h8" />
+          </g>
+        </symbol>
+        <symbol id="i-calendar" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+            <path d="M3.5 10h17M8 3v4M16 3v4" />
+          </g>
+        </symbol>
       </defs>
     </svg>
   );

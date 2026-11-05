@@ -9,7 +9,9 @@ export function HowItWorks() {
       <div className="wrap">
         <SectionHead
           eyebrow="How it works"
-          title="Four steps from sign-up to leaderboard."
+          title="Four steps from sign-up to"
+          accent="leaderboard."
+          center
         />
         <div className="steps">
           {steps.map((step) => (
