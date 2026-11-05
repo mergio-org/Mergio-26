@@ -6,6 +6,7 @@ export const links = {
   submitProject: "#",
   mentor: "#",
   maintainerGuide: "#",
+  sponsor: "#",
   discord: "#",
   rules: "#",
   codeOfConduct: "#",
@@ -84,18 +85,22 @@ export const steps = [
   {
     title: "Register with GitHub",
     body: "One-click sign-in. Your GitHub account links your contributions automatically.",
+    icon: "github" as const,
   },
   {
     title: "Choose a project",
     body: "Browse approved repositories and pick one that matches your skills.",
+    icon: "repo" as const,
   },
   {
     title: "Solve an issue",
     body: "Get assigned a labelled issue, ask mentors for help, and open a pull request.",
+    icon: "issue" as const,
   },
   {
     title: "Get merged",
     body: "When your pull request is merged, points are added to your profile.",
+    icon: "merge" as const,
   },
 ];
 
@@ -124,52 +129,57 @@ export const rules = [
   "Spam leads to disqualification",
 ];
 
-export const timeline = [
+// Add `when` (e.g. "Dec 1") once a date is fixed; until then the stage number is shown.
+// Mark the stage in progress with `active: true`; earlier stages render as done.
+type Stage = { title: string; body: string; when?: string; active?: boolean };
+
+export const timeline: Stage[] = [
   {
-    when: "[Date]",
     title: "Planning",
     body: "Team, sponsors and platform setup.",
     active: true,
   },
   {
-    when: "[Date]",
     title: "Call for projects",
     body: "Maintainers submit their repositories.",
   },
   {
-    when: "[Date]",
     title: "Registration",
     body: "Sign-ups open for all students.",
   },
   {
-    when: "[Date]",
     title: "Onboarding",
     body: "Opening ceremony and Git sessions.",
   },
   {
-    when: "[Date]",
     title: "Contribution month",
     body: "Contribute and climb the leaderboard.",
   },
   {
-    when: "[Date]",
     title: "Results",
     body: "Winners announced at the closing ceremony.",
   },
 ];
 
+// Add `prize` to a place once it is confirmed; until then the podium shows "Revealing soon".
+type Place = { place: string; prize?: string };
+
 export const mainPrize = {
   kicker: "Top contributors",
   title: "Prizes for the top 3",
   body: "Prizes, goodies and certificates of excellence for the highest scorers on the overall leaderboard.",
-  places: [
-    { place: "1st", prize: "[Prize]" },
-    { place: "2nd", prize: "[Prize]" },
-    { place: "3rd", prize: "[Prize]" },
-  ],
+  places: [{ place: "1st" }, { place: "2nd" }, { place: "3rd" }] as Place[],
 };
 
-export const prizes = [
+type Prize = {
+  kicker: string;
+  title: string;
+  body: string;
+  cta?: string;
+  href?: string;
+};
+
+export const prizes: Prize[] = [
   {
     kicker: "Top performers",
     title: "Swag & certificates",
@@ -187,8 +197,10 @@ export const prizes = [
   },
   {
     kicker: "Sponsors",
-    title: "[Sponsor logos]",
-    body: "Interested in supporting Mergio? Reach out to the GDG KNIT team.",
+    title: "Become a sponsor",
+    body: "Help students ship their first open-source work. Reach out to the GDG KNIT team.",
+    cta: "Get in touch",
+    href: links.sponsor,
   },
 ];
 
