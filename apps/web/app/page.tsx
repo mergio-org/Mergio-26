@@ -1,7 +1,7 @@
 import { About } from "@/components/landing/about";
 import { IconSprite } from "@/components/landing/art/icon-sprite";
 import { Faq } from "@/components/landing/faq";
-import { FinalCta, OrganiserStrip } from "@/components/landing/final-cta";
+import { FinalCta } from "@/components/landing/final-cta";
 import { Hero } from "@/components/landing/hero";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { Maintainers } from "@/components/landing/maintainers";
@@ -30,7 +30,6 @@ export default function HomePage() {
           <Maintainers />
           <Faq />
           <FinalCta />
-          <OrganiserStrip />
           {/* Last, so the snow paints in front of the scene art but still behind all content. */}
           <NightSnow />
         </div>
