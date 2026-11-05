@@ -9,10 +9,12 @@ export function Prizes() {
       <div className="wrap">
         <SectionHead
           eyebrow="Prizes & recognition"
-          title="Your work, recognised."
+          title="Your work,"
+          accent="recognised."
+          center
         />
         <div className="prizes">
-          <article className="prize main reveal">
+          <article className="prize main panel panel-featured reveal">
             <span className="k">{mainPrize.kicker}</span>
             <h3>{mainPrize.title}</h3>
             <p>{mainPrize.body}</p>
@@ -26,7 +28,7 @@ export function Prizes() {
             </div>
           </article>
           {prizes.map((prize) => (
-            <article key={prize.kicker} className="prize reveal">
+            <article key={prize.kicker} className="prize panel reveal">
               <span className="k">{prize.kicker}</span>
               <h3>{prize.title}</h3>
               <p>{prize.body}</p>

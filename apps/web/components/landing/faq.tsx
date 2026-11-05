@@ -9,10 +9,10 @@ export function Faq() {
     <section className="section" id="faq">
       <SidePines side="right" />
       <div className="wrap faq">
-        <SectionHead eyebrow="FAQ" title="Questions, answered.">
+        <SectionHead eyebrow="FAQ" title="Questions," accent="answered.">
           Still unsure? Ask us on Discord.
         </SectionHead>
-        <div className="faq-list reveal">
+        <div className="faq-list panel reveal">
           {faqs.map(({ q, a }) => (
             <details key={q}>
               <summary>

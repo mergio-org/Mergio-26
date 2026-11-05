@@ -1,4 +1,15 @@
-type IconName = "flake" | "github" | "check" | "chev" | "merge";
+export type IconName =
+  | "flake"
+  | "github"
+  | "check"
+  | "chev"
+  | "merge"
+  | "pr"
+  | "repo"
+  | "issue"
+  | "mentor"
+  | "trophy"
+  | "calendar";
 
 // Renders an icon from the shared sprite in <IconSprite />.
 export function Icon({
