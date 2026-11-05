@@ -13,10 +13,7 @@ export function Maintainers() {
               Get motivated contributors working on your open issues for a full
               month, with mentors from our side to help with reviews.
             </p>
-            <div
-              className="hero-cta"
-              style={{ justifyContent: "flex-start", marginTop: 28 }}
-            >
+            <div className="hero-cta">
               <a className="btn btn-primary" href={links.submitProject}>
                 Submit a project
               </a>
