@@ -275,16 +275,36 @@ export const faqs = [
   },
 ];
 
-export const stripFacts = [
+export const organiser = "GDG on Campus KNIT Sultanpur";
+
+export const footerFacts = [
   { value: "1 month", label: "of contributions" },
   { value: "15–25", label: "curated projects" },
   { value: "Free", label: "for every student" },
 ];
 
-export const footerLinks = [
-  { label: "Rules", href: links.rules },
-  { label: "Code of conduct", href: links.codeOfConduct },
-  { label: "Discord", href: links.discord },
-  { label: "Instagram", href: links.instagram },
-  { label: "LinkedIn", href: links.linkedin },
+export const footerColumns = [
+  {
+    title: "Program",
+    links: navItems.map(({ id, label }) => ({ label, href: `#${id}` })),
+  },
+  {
+    title: "Get involved",
+    links: [
+      { label: "Register", href: links.register },
+      { label: "Submit a project", href: links.submitProject },
+      { label: "Become a mentor", href: links.mentor },
+      { label: "Become a sponsor", href: links.sponsor },
+    ],
+  },
+  {
+    title: "Community",
+    links: [
+      { label: "Discord", href: links.discord },
+      { label: "Instagram", href: links.instagram },
+      { label: "LinkedIn", href: links.linkedin },
+      { label: "Rules", href: links.rules },
+      { label: "Code of conduct", href: links.codeOfConduct },
+    ],
+  },
 ];
