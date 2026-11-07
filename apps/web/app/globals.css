@@ -52,6 +52,8 @@
   --gold: #F2C66D;
   --silver: #C7D3E3;
   --bronze: #E3A57E;
+  --moon-lit: #F2F7FF;
+  --moon-dark: rgba(140, 203, 255, .08);
   --scene-rim-o: .22;
 }
 * { box-sizing: border-box; }
@@ -316,20 +318,22 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 /* Pinned to the last column so rows without a gain chip still line up. */
 .pts { grid-column: 4; min-width: 44px; text-align: right; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* timeline: a constellation, one star per stage; stars alternate high (12px) and low (44px)
-   to match the polyline points in timeline.tsx */
-.constellation { position: relative; }
-.constellation-lines { position: absolute; left: 0; top: 0; width: 100%; height: 56px; overflow: visible; pointer-events: none; }
-.constellation-lines polyline { fill: none; stroke: var(--panel-border-strong); stroke-width: 1.5; stroke-dasharray: 3 6; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.constellation-lines .done { stroke: var(--ice); stroke-dasharray: none; opacity: .7; }
-.timeline { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
-.timeline li { --y: 12px; position: relative; padding: 84px 10px 0; text-align: center; }
-.timeline li:nth-child(even) { --y: 44px; }
-.star { position: absolute; top: var(--y); left: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--node-bg); border: 1.5px solid var(--panel-border-strong); box-shadow: 0 0 14px -2px var(--ice-glow); }
-.timeline li.done .star { background: var(--ice-soft); border-color: var(--ice); }
-.timeline li.active .star { width: 16px; height: 16px; margin: -8px 0 0 -8px; background: var(--ice); border-color: var(--ice); box-shadow: 0 0 0 5px var(--ice-soft), 0 0 24px var(--ice-glow); }
-.timeline li.active .star::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid var(--ice); animation: pulse 2.4s ease-out infinite; }
-@keyframes pulse { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.2); opacity: 0; } }
+/* timeline: one lunar cycle, new moon to full moon, along the moon's path across the sky.
+   Each stage sets --y (its height on the arc, from timeline.tsx); the list sets --n columns. */
+.moonpath { position: relative; }
+.moonpath::before { content: ""; position: absolute; left: 50%; top: -70px; z-index: -1; width: min(900px, 100%); height: 320px; transform: translateX(-50%); pointer-events: none; background: radial-gradient(closest-side, rgba(var(--ice-rgb), .1), transparent); }
+.moonpath-arc { position: absolute; left: 0; top: 0; width: 100%; height: 120px; overflow: visible; pointer-events: none; }
+.moonpath-arc .arc { fill: none; stroke: rgba(var(--ice-rgb), .35); stroke-width: 1.5; stroke-dasharray: 3 7; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.moonpath-arc .arc.done { stroke: var(--ice); stroke-dasharray: none; opacity: .8; }
+.moonpath-arc .twinkle { fill: var(--text); animation: twinkle 4.5s ease-in-out infinite; }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); }
+.timeline li { position: relative; padding: 156px 10px 0; text-align: center; }
+.moon-phase { position: absolute; left: 50%; top: var(--y); width: 54px; height: 54px; margin: -27px 0 0 -27px; overflow: visible; filter: drop-shadow(0 0 10px rgba(var(--ice-rgb), .35)); }
+.moon-dark { fill: var(--moon-dark); stroke: rgba(var(--ice-rgb), .4); stroke-width: 1; }
+.moon-lit { fill: var(--moon-lit); }
+.timeline li.active .moon-phase { filter: drop-shadow(0 0 16px var(--ice-glow)); }
+/* halo pulsing around the current stage's moon */
+.timeline li.active::before { content: ""; position: absolute; left: 50%; top: var(--y); width: 72px; height: 72px; margin: -36px 0 0 -36px; border-radius: 50%; border: 1px solid var(--ice); animation: beacon 2.6s ease-out infinite; }
 .timeline .when { font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
 .timeline .now { margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: var(--ice); color: var(--on-ice); font: 600 11px var(--sans); vertical-align: 1px; }
 .timeline li.active .when { color: var(--ice); }
@@ -461,7 +465,8 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .78)); --panel-border: rgba(31, 111, 209, .14); --panel-border-strong: rgba(31, 111, 209, .32);
   --panel-highlight: rgba(255, 255, 255, .9); --panel-shadow: 0 16px 36px -22px rgba(30, 60, 110, .30); --panel-glow: rgba(31, 111, 209, .10); --ice-faint: rgba(31, 111, 209, .06);
   --node-bg: #FFFFFF; --on-ice: #FFFFFF; --ice-glow: rgba(31, 111, 209, .28); --podium-top: rgba(31, 111, 209, .12); --cap-o: 1;
-  --ice-rgb: 31, 111, 209; --violet: #7C4DDB; --ski-blue: #2563EB; --gold: #B7861F; --silver: #6B7C93; --bronze: #A8603A; }
+  --ice-rgb: 31, 111, 209; --violet: #7C4DDB; --ski-blue: #2563EB; --gold: #B7861F; --silver: #6B7C93; --bronze: #A8603A;
+  --moon-lit: #FFFFFF; --moon-dark: #CFDCEC; }
 [data-theme="light"] body::after { opacity: .025; }
 [data-theme="light"] .btn-primary, [data-theme="light"] .nav-cta { background: #0E1726; color: #FFFFFF; }
 [data-theme="light"] .btn-primary:hover, [data-theme="light"] .nav-cta:hover { background: #1F2A3D; }
@@ -528,11 +533,12 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .crystal.c2 { width: 160px; right: -60px; }
   .crystal.c3 { display: none; }
   .board-wrap { grid-template-columns: 1fr; gap: 32px; margin-top: 64px; }
-  /* the constellation becomes a vertical dashed line with the stars on it */
-  .constellation-lines { display: none; }
-  .timeline { grid-template-columns: 1fr; margin-left: 8px; border-left: 1.5px dashed var(--panel-border-strong); }
-  .timeline li, .timeline li:nth-child(even) { --y: 10px; padding: 0 0 28px 28px; text-align: left; }
-  .star { left: -.75px; }
+  /* the arc becomes a vertical dashed line with the moons on it */
+  .moonpath::before, .moonpath-arc { display: none; }
+  .timeline { grid-template-columns: 1fr; margin-left: 20px; border-left: 1.5px dashed rgba(var(--ice-rgb), .35); }
+  .timeline li { padding: 4px 0 30px 38px; text-align: left; }
+  .moon-phase { left: -.75px; top: 16px; width: 38px; height: 38px; margin: -19px 0 0 -19px; }
+  .timeline li.active::before { left: -.75px; top: 16px; width: 52px; height: 52px; margin: -26px 0 0 -26px; }
   .prizes { grid-template-columns: 1fr; }
   .prize.main { grid-row: auto; }
   .maint { grid-template-columns: 1fr; padding: 32px; }
@@ -583,7 +589,7 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .aurora, .stars .tw, .day-clouds svg, .timeline li.active .star::after, .podium .soon, .crystal { animation: none; }
+  .aurora, .stars .tw, .day-clouds svg, .timeline li.active::before, .moonpath-arc .twinkle, .podium .soon, .crystal { animation: none; }
   .summit-glow, .step:last-child .step-node::after { display: none; }
   .board-wrap:not(.in) .board-rows li.you, .board-wrap:not(.in) .board-rows li.passed, .board-wrap:not(.in) .board-rows li.you .gain { transform: none; }
   .board-rows li.you, .board-rows li.passed, .board-rows li.you .gain { transition: none; }
