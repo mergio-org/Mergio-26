@@ -87,19 +87,26 @@ export const steps = [
   },
 ];
 
+// Levels are shown as ski runs: `run` picks the difficulty marker (green circle, blue square, diamond).
 export const levels = [
   {
     level: "Level 1",
+    tier: "Easy",
+    run: "circle",
     points: 10,
     body: "Documentation, typo fixes, small UI fixes and tests.",
   },
   {
     level: "Level 2",
+    tier: "Intermediate",
+    run: "square",
     points: 25,
     body: "Bug fixes, small features and refactoring.",
   },
   {
     level: "Level 3",
+    tier: "Expert",
+    run: "diamond",
     points: 45,
     body: "Major features, performance and architecture work.",
   },
