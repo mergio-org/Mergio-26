@@ -30,55 +30,33 @@ export const heroHighlights = [
   "Beginner friendly",
 ];
 
+// Kept deliberately short: the hero, Scoring and Maintainers sections carry the detail.
 export const about = {
-  offers: [
+  stats: [
+    { value: "1 month", label: "of open source", icon: "calendar" as const },
     {
-      title: "Real repositories",
-      body: "15–25 active open-source projects, each with a working setup guide and issues labelled by difficulty.",
+      value: "Unlimited",
+      label: "projects to pick from",
       icon: "repo" as const,
     },
-    {
-      title: "Reviews within 48 hours",
-      body: "Mentors review your pull requests and answer questions on Discord, so you are never stuck for long.",
-      icon: "clock" as const,
-    },
-    {
-      title: "Made for first-timers",
-      body: "Onboarding sessions on Git, GitHub and your first pull request, plus Level 1 issues to start with.",
-      icon: "sprout" as const,
-    },
-    {
-      title: "A leaderboard that counts merges",
-      body: "Merged pull requests are tracked from GitHub automatically. Overall, weekly, college and first-timer rankings.",
-      icon: "chart" as const,
-    },
-    {
-      title: "Certificates for everyone who ships",
-      body: "One merged pull request earns you a certificate. The top contributors win prizes.",
-      icon: "award" as const,
-    },
+    { value: "48 h", label: "review turnaround", icon: "clock" as const },
+    { value: "1 merge", label: "earns a certificate", icon: "award" as const },
   ],
   roles: [
     {
       who: "Students",
-      title: "Contribute",
-      body: "Any college, any year, any skill level. Free to join.",
       cta: "Register",
       href: links.register,
       icon: "pr" as const,
     },
     {
       who: "Maintainers",
-      title: "Bring your project",
-      body: "Get a month of motivated contributors working on your open issues.",
       cta: "Submit a project",
       href: links.submitProject,
       icon: "repo" as const,
     },
     {
-      who: "Seniors & alumni",
-      title: "Mentor",
-      body: "Review pull requests and help newcomers through their first merge.",
+      who: "Mentors",
       cta: "Become a mentor",
       href: links.mentor,
       icon: "mentor" as const,
@@ -279,7 +257,7 @@ export const organiser = "GDG on Campus KNIT Sultanpur";
 
 export const footerFacts = [
   { value: "1 month", label: "of contributions" },
-  { value: "15–25", label: "curated projects" },
+  { value: "Unlimited", label: "projects" },
   { value: "Free", label: "for every student" },
 ];
 
