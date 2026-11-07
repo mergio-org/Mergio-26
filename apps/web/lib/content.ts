@@ -67,39 +67,46 @@ export const about = {
 export const steps = [
   {
     title: "Register with GitHub",
-    body: "One-click sign-in. Your GitHub account links your contributions automatically.",
+    body: "Sign in once. Your contributions are tracked automatically.",
     icon: "github" as const,
   },
   {
     title: "Choose a project",
-    body: "Browse approved repositories and pick one that matches your skills.",
+    body: "Pick a repository that matches your skills.",
     icon: "repo" as const,
   },
   {
     title: "Solve an issue",
-    body: "Get assigned a labelled issue, ask mentors for help, and open a pull request.",
+    body: "Grab a labelled issue and open a pull request, with mentors to help.",
     icon: "issue" as const,
   },
   {
     title: "Get merged",
-    body: "When your pull request is merged, points are added to your profile.",
+    body: "Points land on your profile the moment it's merged.",
     icon: "merge" as const,
   },
 ];
 
+// Levels are shown as ski runs: `run` picks the difficulty marker (green circle, blue square, diamond).
 export const levels = [
   {
     level: "Level 1",
+    tier: "Easy",
+    run: "circle",
     points: 10,
     body: "Documentation, typo fixes, small UI fixes and tests.",
   },
   {
     level: "Level 2",
+    tier: "Intermediate",
+    run: "square",
     points: 25,
     body: "Bug fixes, small features and refactoring.",
   },
   {
     level: "Level 3",
+    tier: "Expert",
+    run: "diamond",
     points: 45,
     body: "Major features, performance and architecture work.",
   },

@@ -1,8 +1,10 @@
 import { steps } from "@/lib/content";
+import { Summit } from "./art/summit";
 import { Icon } from "./icon";
 import { SectionHead } from "./section-head";
 
-// Four icon nodes on a trail that ends at the merge. The trail is drawn in CSS (.steps::before/::after).
+// The steps climb a snowy mountain trail from left to right; the merge is the summit.
+// On narrower screens they stack along a vertical trail instead.
 export function HowItWorks() {
   return (
     <section className="section" id="how">
@@ -13,20 +15,27 @@ export function HowItWorks() {
           accent="leaderboard."
           center
         />
-        <ol className="steps reveal">
-          {steps.map((step, i) => (
-            <li key={step.title} className="step">
-              <span className="step-node">
-                <Icon name={step.icon} size={22} />
-              </span>
-              <span className="step-num">
-                Step {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
-            </li>
-          ))}
-        </ol>
+        <div className="journey reveal">
+          <Summit />
+          <ol className="steps">
+            {steps.map((step, i) => (
+              <li key={step.title} className="step">
+                <span className="step-node">
+                  <Icon name={step.icon} size={22} />
+                </span>
+                <div
+                  className={`step-card panel${i === steps.length - 1 ? " panel-featured" : ""}`}
+                >
+                  <span className="step-num">
+                    Step {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );

@@ -4,8 +4,8 @@
 const f = (n: number) => n.toFixed(1);
 
 // A three-tier pine standing on `base`, `h` px tall, plus the snow caps on each tier.
-// Proportions match the pines elsewhere on the page.
-function pine(cx: number, base: number, h: number) {
+// Proportions match the pines elsewhere on the page. Also used by summit.tsx.
+export function pine(cx: number, base: number, h: number) {
   const s = h / 170;
   const top = base - h;
   const tiers = [

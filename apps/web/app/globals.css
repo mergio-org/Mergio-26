@@ -48,6 +48,10 @@
   --cap-o: .8;
   --ice-rgb: 140, 203, 255;
   --violet: #B79CFF;
+  --ski-blue: #5B9BFF;
+  --gold: #F2C66D;
+  --silver: #C7D3E3;
+  --bronze: #E3A57E;
   --scene-rim-o: .22;
 }
 * { box-sizing: border-box; }
@@ -192,7 +196,6 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
   background: linear-gradient(180deg, rgba(var(--ice-rgb), .08), transparent 160px), radial-gradient(60% 90% at 0% 0%, rgba(255, 255, 255, .05), transparent 60%), radial-gradient(50% 80% at 100% 100%, rgba(var(--ice-rgb), .1), transparent 60%), var(--panel-bg); }
 .ledge { position: absolute; left: -1px; top: -12px; width: calc(100% + 2px); height: 36px; color: var(--ice); pointer-events: none; }
 .ledge .snow { fill: var(--scene-snow); opacity: var(--cap-o); }
-.ledge .icicles { fill: url(#icicle-fade); }
 [data-theme="light"] .ledge .snow { filter: drop-shadow(0 2px 2px rgba(30, 60, 110, .2)); }
 .about-stats { list-style: none; margin: 0; padding: 60px 24px 44px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .about-stats li { display: flex; flex-direction: column; align-items: center; padding: 0 16px; text-align: center; }
@@ -211,28 +214,54 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .join-arrow { margin-left: auto; color: var(--dim); transition: transform .2s, color .2s; }
 .join-item:hover .join-arrow { color: var(--ice); transform: translateX(4px); }
 
-/* steps: four icon nodes on a dashed trail, with a light travelling toward the merge */
-.steps { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 24px; }
-.steps::before, .steps::after { content: ""; position: absolute; top: 27px; left: 12.5%; right: 12.5%; height: 2px; pointer-events: none; }
-.steps::before { background: repeating-linear-gradient(90deg, var(--panel-border-strong) 0 6px, transparent 6px 12px); }
-.steps::after { background: linear-gradient(90deg, transparent, var(--ice) 50%, transparent) no-repeat; background-size: 30% 100%; opacity: .8; animation: trail 4.5s ease-in-out infinite; }
-@keyframes trail { from { background-position: -40% 0; } to { background-position: 140% 0; } }
-.step { text-align: center; }
+/* how it works: checkpoints climbing a mountain trail (art/summit.tsx) to the merge at the summit.
+   --rise lifts each step so the node centres sit on the trail at 260, 196, 132 and 68px. */
+.journey { position: relative; }
+/* Masked to fade out at the bottom and at both sides, so the range blends into the sky. */
+.summit { position: absolute; left: 0; top: 0; width: 100%; height: 480px; z-index: -1; pointer-events: none; color: var(--ice);
+  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 98%), linear-gradient(90deg, transparent, #000 10%, #000 94%, transparent); -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(180deg, #000 60%, transparent 98%), linear-gradient(90deg, transparent, #000 10%, #000 94%, transparent); mask-composite: intersect; }
+/* a faint snowy rim along each ridge so the silhouettes read against the sky */
+.summit-rim { fill: none; stroke: rgba(var(--ice-rgb), .35); stroke-width: 1.5; }
+.summit-rim.back { stroke: rgba(var(--ice-rgb), .16); }
+.summit-snow { fill: var(--scene-snow); opacity: calc(var(--scene-snow-o) * 1.6); }
+.summit-trail { fill: none; stroke: rgba(var(--ice-rgb), .4); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
+/* a short glowing dash that climbs the trail (pathLength=1, so the dash is 10% of the trail) */
+.summit-glow { fill: none; stroke: var(--ice); stroke-width: 3; stroke-linecap: round; stroke-dasharray: .1 1; filter: drop-shadow(0 0 6px var(--ice)); animation: climb 6s ease-in-out infinite; }
+@keyframes climb { from { stroke-dashoffset: .1; } to { stroke-dashoffset: -1; } }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; }
+.step { --rise: 232px; margin-top: var(--rise); padding: 0 10px; text-align: center; }
+.step:nth-child(2) { --rise: 168px; }
+.step:nth-child(3) { --rise: 104px; }
+.step:nth-child(4) { --rise: 40px; }
 .step-node { position: relative; z-index: 1; width: 56px; height: 56px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; color: var(--ice); border: 1px solid var(--panel-border-strong); background: linear-gradient(var(--ice-faint), var(--ice-faint)), var(--node-bg); box-shadow: 0 0 24px -6px var(--ice-glow); }
 .step:last-child .step-node { color: var(--on-ice); background: var(--ice); border-color: transparent; box-shadow: 0 0 0 6px var(--ice-soft), 0 0 36px var(--ice-glow); }
-.step-num { display: block; margin-top: 20px; font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
-.step h3 { margin-top: 6px; font-size: 18px; font-weight: 600; }
-.step p { margin: 8px auto 0; max-width: 240px; color: var(--muted); font-size: 15px; }
+/* the summit beacon */
+.step:last-child .step-node::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 1px solid var(--ice); animation: beacon 2.6s ease-out infinite; }
+@keyframes beacon { from { transform: scale(.9); opacity: .8; } to { transform: scale(1.7); opacity: 0; } }
+.step-card { margin-top: 18px; padding: 20px 18px 22px; }
+.step-num { display: inline-block; padding: 2px 9px; border: 1px solid var(--panel-border); border-radius: 999px; background: var(--ice-faint); font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ice); }
+.step h3 { margin-top: 12px; font-size: 18px; font-weight: 600; }
+.step p { margin-top: 6px; color: var(--muted); font-size: 14px; }
 
 /* scoring */
 .score-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-/* Levels glow brighter the harder they are; one snowflake per level. */
-.score { --glow: .05; --edge: .14; padding: 28px; display: flex; flex-direction: column; gap: 10px;
+/* Levels are ski runs: they glow brighter, carry a tougher marker and a steeper slope (art/slope.tsx). */
+.score { --glow: .05; --edge: .14; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 10px;
   background: radial-gradient(90% 70% at 50% 0%, rgba(var(--ice-rgb), var(--glow)), transparent 70%), var(--panel-bg); border-color: rgba(var(--ice-rgb), var(--edge)); }
 .score-2 { --glow: .11; --edge: .24; }
 .score-3 { --glow: .2; --edge: .42; box-shadow: inset 0 1px 0 var(--panel-highlight), 0 0 48px -16px rgba(var(--ice-rgb), .45), var(--panel-shadow); }
 .score-top { display: flex; align-items: center; justify-content: space-between; }
-.flakes { display: inline-flex; gap: 3px; color: var(--ice); }
+.run { display: inline-flex; align-items: center; gap: 8px; font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.run-marker { flex: none; width: 14px; height: 14px; }
+.run-marker.circle { border-radius: 50%; background: var(--green); }
+.run-marker.square { border-radius: 2px; background: var(--ski-blue); }
+/* the "black diamond" uses the text colour, so it stays visible on the dark theme */
+.run-marker.diamond { width: 11px; height: 11px; margin: 0 1.5px; border-radius: 1px; background: var(--text); transform: rotate(45deg); }
+.slope { display: block; flex: none; width: calc(100% + 56px); height: 110px; margin: auto -28px -28px; padding-top: 8px; color: var(--ice); }
+.slope-rim { fill: none; stroke: rgba(var(--ice-rgb), .45); stroke-width: 1.5; }
+.slope-cap { fill: var(--scene-snow); opacity: calc(var(--scene-snow-o) * 1.8); }
+.slope-track { fill: none; stroke: var(--text); stroke-opacity: .35; stroke-width: 1.5; stroke-dasharray: 3 5; stroke-linecap: round; }
 .score .num span { background: linear-gradient(180deg, #FFFFFF 35%, #BFE1FF 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 [data-theme="light"] .score .num span { background: linear-gradient(180deg, #0E1726 30%, #1F5FB8 100%); -webkit-background-clip: text; background-clip: text; }
 .score .lv { font-family: var(--mono); font-size: 13px; color: var(--ice); background: var(--ice-faint); border: 1px solid var(--panel-border-strong); border-radius: 6px; padding: 2px 8px; width: max-content; }
@@ -250,18 +279,34 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .board-copy p { margin-top: 14px; color: var(--muted); }
 .board-tabs { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .board-tabs li { padding: 5px 12px; border: 1px solid var(--panel-border); border-radius: 999px; background: var(--ice-faint); font: 500 12px var(--mono); letter-spacing: .04em; color: var(--muted); }
-.board { margin: 0; padding: 8px; }
-.board-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 14px; font-size: 14px; font-weight: 600; }
+.board { position: relative; margin: 0; padding: 8px; }
+.board-head { display: flex; align-items: center; justify-content: space-between; padding: 24px 14px 14px; font-size: 14px; font-weight: 600; }
 .board-head > span:first-child { display: inline-flex; align-items: center; gap: 8px; }
 .board-head svg { color: var(--ice); }
 .board-tag { padding: 2px 9px; border: 1px dashed var(--panel-border-strong); border-radius: 999px; font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
-.board-rows { list-style: none; margin: 0; padding: 0; }
-.board-rows li { display: grid; grid-template-columns: 28px 36px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; }
-.board-rows li + li { margin-top: 2px; }
+/* Ranks are a separate fixed column so they stay put while rows move. Rows have a fixed height
+   so the two columns line up and the climb below moves exactly one row. */
+.board-body { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; padding-left: 6px; }
+.board-ranks, .board-rows { list-style: none; margin: 0; padding: 0; }
+.board-ranks li, .board-rows li { height: 58px; }
+.board-ranks li + li, .board-rows li + li { margin-top: 2px; }
+.board-rows li { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 0 14px; border-radius: 10px; }
 .board-rows li:nth-child(odd):not(.you) { background: var(--ice-faint); }
-.board-rows li.you { background: rgba(var(--ice-rgb), .12); box-shadow: inset 0 0 0 1px rgba(var(--ice-rgb), .4); }
-.rank { font: 600 14px var(--mono); color: var(--dim); text-align: center; }
-.board-rows li:first-child .rank { color: var(--ice); }
+.board-rows li.you { position: relative; z-index: 1; background: rgba(var(--ice-rgb), .12); box-shadow: inset 0 0 0 1px rgba(var(--ice-rgb), .4); }
+/* top three get ice-tinted gold, silver and bronze medals */
+.rank { display: grid; place-items: center; font: 600 14px var(--mono); color: var(--dim); }
+.rank.r1, .rank.r2, .rank.r3 { --m: var(--gold); }
+.rank.r2 { --m: var(--silver); }
+.rank.r3 { --m: var(--bronze); }
+.rank.r1, .rank.r2, .rank.r3 { position: relative; isolation: isolate; color: var(--m); }
+.rank.r1::before, .rank.r2::before, .rank.r3::before { content: ""; position: absolute; z-index: -1; width: 28px; height: 28px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--m) 50%, transparent); background: color-mix(in srgb, var(--m) 16%, transparent); box-shadow: 0 0 14px -4px var(--m); }
+/* "You" climbs from 5th to 4th, passing the row below, once the board scrolls into view
+   (ScrollEffects adds .in); then the +25 pops in. */
+.board-wrap:not(.in) .board-rows li.you { transform: translateY(calc(100% + 2px)); }
+.board-wrap:not(.in) .board-rows li.passed { transform: translateY(calc(-100% - 2px)); }
+.board-wrap:not(.in) .board-rows li.you .gain { transform: scale(0); }
+.board-rows li.you, .board-rows li.passed { transition: transform .9s cubic-bezier(.2, .8, .2, 1) .7s; }
+.board-rows li.you .gain { display: inline-block; transition: transform .45s cubic-bezier(.3, 1.6, .5, 1) 1.5s; }
 .avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; font-weight: 600; color: var(--ice); background: var(--ice-faint); border: 1px solid var(--panel-border); }
 .board-rows li.you .avatar { color: var(--on-ice); background: var(--ice); border-color: transparent; }
 .who { display: flex; flex-direction: column; min-width: 0; }
@@ -269,7 +314,7 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .who small { font-size: 12px; color: var(--dim); }
 .gain { padding: 2px 8px; border-radius: 999px; font: 600 12px var(--mono); color: var(--green); background: color-mix(in srgb, var(--green) 14%, transparent); }
 /* Pinned to the last column so rows without a gain chip still line up. */
-.pts { grid-column: 5; min-width: 44px; text-align: right; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pts { grid-column: 4; min-width: 44px; text-align: right; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* timeline: a constellation, one star per stage; stars alternate high (12px) and low (44px)
    to match the polyline points in timeline.tsx */
@@ -416,7 +461,7 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .78)); --panel-border: rgba(31, 111, 209, .14); --panel-border-strong: rgba(31, 111, 209, .32);
   --panel-highlight: rgba(255, 255, 255, .9); --panel-shadow: 0 16px 36px -22px rgba(30, 60, 110, .30); --panel-glow: rgba(31, 111, 209, .10); --ice-faint: rgba(31, 111, 209, .06);
   --node-bg: #FFFFFF; --on-ice: #FFFFFF; --ice-glow: rgba(31, 111, 209, .28); --podium-top: rgba(31, 111, 209, .12); --cap-o: 1;
-  --ice-rgb: 31, 111, 209; --violet: #7C4DDB; }
+  --ice-rgb: 31, 111, 209; --violet: #7C4DDB; --ski-blue: #2563EB; --gold: #B7861F; --silver: #6B7C93; --bronze: #A8603A; }
 [data-theme="light"] body::after { opacity: .025; }
 [data-theme="light"] .btn-primary, [data-theme="light"] .nav-cta { background: #0E1726; color: #FFFFFF; }
 [data-theme="light"] .btn-primary:hover, [data-theme="light"] .nav-cta:hover { background: #1F2A3D; }
@@ -495,15 +540,13 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .foot-top { grid-template-columns: 1fr; gap: 40px; }
   .faq-list { padding: 0 20px; }
 }
-/* steps stack vertically, node on the left, with the trail running down the nodes */
-@media (max-width: 760px) {
-  .steps { grid-template-columns: 1fr; row-gap: 28px; }
-  .steps::before { top: 28px; bottom: 28px; left: 27px; right: auto; width: 2px; height: auto; background: repeating-linear-gradient(180deg, var(--panel-border-strong) 0 6px, transparent 6px 12px); }
-  .steps::after { display: none; }
-  .step { display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 20px; text-align: left; }
-  .step-node { grid-row: 1 / span 4; margin: 0; }
-  .step-num { margin-top: 2px; }
-  .step p { margin-inline: 0; max-width: none; }
+/* below 960px the mountain is hidden and the steps stack along a vertical trail */
+@media (max-width: 960px) {
+  .summit { display: none; }
+  .steps { position: relative; grid-template-columns: 1fr; row-gap: 16px; }
+  .steps::before { content: ""; position: absolute; top: 28px; bottom: 28px; left: 27px; width: 2px; background: repeating-linear-gradient(180deg, rgba(var(--ice-rgb), .4) 0 6px, transparent 6px 12px); }
+  .step, .step:nth-child(n) { --rise: 0px; display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 16px; align-items: start; padding: 0; text-align: left; }
+  .step-card { margin-top: 0; padding: 18px 20px; }
 }
 @media (max-width: 640px) {
   :root { --section-y: 72px; --head-gap: 40px; }
@@ -531,7 +574,9 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .score-grid { grid-template-columns: 1fr; }
   .foot-cols { grid-template-columns: 1fr 1fr; row-gap: 32px; }
   .about-stats span { font-size: 13px; }
-  .board-rows li { grid-template-columns: 22px 32px minmax(0, 1fr) auto auto; gap: 10px; padding: 10px; }
+  .board-body { grid-template-columns: 26px minmax(0, 1fr); gap: 6px; padding-left: 2px; }
+  .board-rows li { grid-template-columns: 32px minmax(0, 1fr) auto auto; gap: 10px; padding: 0 10px; }
+  .slope { width: calc(100% + 48px); margin: auto -24px -24px; }
   .avatar { width: 32px; height: 32px; }
   .repo-tabs { gap: 12px; }
 }
@@ -539,7 +584,9 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .aurora, .stars .tw, .day-clouds svg, .timeline li.active .star::after, .podium .soon, .crystal { animation: none; }
-  .steps::after { display: none; }
+  .summit-glow, .step:last-child .step-node::after { display: none; }
+  .board-wrap:not(.in) .board-rows li.you, .board-wrap:not(.in) .board-rows li.passed, .board-wrap:not(.in) .board-rows li.you .gain { transform: none; }
+  .board-rows li.you, .board-rows li.passed, .board-rows li.you .gain { transition: none; }
   .night .final-scene { transform: none; opacity: 1; transition: none; }
   .btn, .panel, summary .chev, .join-arrow { transition: none; }
   /* Kept separate: browsers without ::details-content would drop a whole selector list containing it. */
