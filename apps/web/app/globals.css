@@ -211,18 +211,35 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .join-arrow { margin-left: auto; color: var(--dim); transition: transform .2s, color .2s; }
 .join-item:hover .join-arrow { color: var(--ice); transform: translateX(4px); }
 
-/* steps: four icon nodes on a dashed trail, with a light travelling toward the merge */
-.steps { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 24px; }
-.steps::before, .steps::after { content: ""; position: absolute; top: 27px; left: 12.5%; right: 12.5%; height: 2px; pointer-events: none; }
-.steps::before { background: repeating-linear-gradient(90deg, var(--panel-border-strong) 0 6px, transparent 6px 12px); }
-.steps::after { background: linear-gradient(90deg, transparent, var(--ice) 50%, transparent) no-repeat; background-size: 30% 100%; opacity: .8; animation: trail 4.5s ease-in-out infinite; }
-@keyframes trail { from { background-position: -40% 0; } to { background-position: 140% 0; } }
-.step { text-align: center; }
+/* how it works: checkpoints climbing a mountain trail (art/summit.tsx) to the merge at the summit.
+   --rise lifts each step so the node centres sit on the trail at 260, 196, 132 and 68px. */
+.journey { position: relative; }
+/* Masked to fade out at the bottom and at both sides, so the range blends into the sky. */
+.summit { position: absolute; left: 0; top: 0; width: 100%; height: 480px; z-index: -1; pointer-events: none; color: var(--ice);
+  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 98%), linear-gradient(90deg, transparent, #000 10%, #000 94%, transparent); -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(180deg, #000 60%, transparent 98%), linear-gradient(90deg, transparent, #000 10%, #000 94%, transparent); mask-composite: intersect; }
+/* a faint snowy rim along each ridge so the silhouettes read against the sky */
+.summit-rim { fill: none; stroke: rgba(var(--ice-rgb), .35); stroke-width: 1.5; }
+.summit-rim.back { stroke: rgba(var(--ice-rgb), .16); }
+.summit-snow { fill: var(--scene-snow); opacity: calc(var(--scene-snow-o) * 1.6); }
+.summit-trail { fill: none; stroke: rgba(var(--ice-rgb), .4); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
+/* a short glowing dash that climbs the trail (pathLength=1, so the dash is 10% of the trail) */
+.summit-glow { fill: none; stroke: var(--ice); stroke-width: 3; stroke-linecap: round; stroke-dasharray: .1 1; filter: drop-shadow(0 0 6px var(--ice)); animation: climb 6s ease-in-out infinite; }
+@keyframes climb { from { stroke-dashoffset: .1; } to { stroke-dashoffset: -1; } }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; }
+.step { --rise: 232px; margin-top: var(--rise); padding: 0 10px; text-align: center; }
+.step:nth-child(2) { --rise: 168px; }
+.step:nth-child(3) { --rise: 104px; }
+.step:nth-child(4) { --rise: 40px; }
 .step-node { position: relative; z-index: 1; width: 56px; height: 56px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; color: var(--ice); border: 1px solid var(--panel-border-strong); background: linear-gradient(var(--ice-faint), var(--ice-faint)), var(--node-bg); box-shadow: 0 0 24px -6px var(--ice-glow); }
 .step:last-child .step-node { color: var(--on-ice); background: var(--ice); border-color: transparent; box-shadow: 0 0 0 6px var(--ice-soft), 0 0 36px var(--ice-glow); }
-.step-num { display: block; margin-top: 20px; font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
-.step h3 { margin-top: 6px; font-size: 18px; font-weight: 600; }
-.step p { margin: 8px auto 0; max-width: 240px; color: var(--muted); font-size: 15px; }
+/* the summit beacon */
+.step:last-child .step-node::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 1px solid var(--ice); animation: beacon 2.6s ease-out infinite; }
+@keyframes beacon { from { transform: scale(.9); opacity: .8; } to { transform: scale(1.7); opacity: 0; } }
+.step-card { margin-top: 18px; padding: 20px 18px 22px; }
+.step-num { display: inline-block; padding: 2px 9px; border: 1px solid var(--panel-border); border-radius: 999px; background: var(--ice-faint); font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ice); }
+.step h3 { margin-top: 12px; font-size: 18px; font-weight: 600; }
+.step p { margin-top: 6px; color: var(--muted); font-size: 14px; }
 
 /* scoring */
 .score-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
@@ -495,15 +512,13 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .foot-top { grid-template-columns: 1fr; gap: 40px; }
   .faq-list { padding: 0 20px; }
 }
-/* steps stack vertically, node on the left, with the trail running down the nodes */
-@media (max-width: 760px) {
-  .steps { grid-template-columns: 1fr; row-gap: 28px; }
-  .steps::before { top: 28px; bottom: 28px; left: 27px; right: auto; width: 2px; height: auto; background: repeating-linear-gradient(180deg, var(--panel-border-strong) 0 6px, transparent 6px 12px); }
-  .steps::after { display: none; }
-  .step { display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 20px; text-align: left; }
-  .step-node { grid-row: 1 / span 4; margin: 0; }
-  .step-num { margin-top: 2px; }
-  .step p { margin-inline: 0; max-width: none; }
+/* below 960px the mountain is hidden and the steps stack along a vertical trail */
+@media (max-width: 960px) {
+  .summit { display: none; }
+  .steps { position: relative; grid-template-columns: 1fr; row-gap: 16px; }
+  .steps::before { content: ""; position: absolute; top: 28px; bottom: 28px; left: 27px; width: 2px; background: repeating-linear-gradient(180deg, rgba(var(--ice-rgb), .4) 0 6px, transparent 6px 12px); }
+  .step, .step:nth-child(n) { --rise: 0px; display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 16px; align-items: start; padding: 0; text-align: left; }
+  .step-card { margin-top: 0; padding: 18px 20px; }
 }
 @media (max-width: 640px) {
   :root { --section-y: 72px; --head-gap: 40px; }
@@ -539,7 +554,7 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .aurora, .stars .tw, .day-clouds svg, .timeline li.active .star::after, .podium .soon, .crystal { animation: none; }
-  .steps::after { display: none; }
+  .summit-glow, .step:last-child .step-node::after { display: none; }
   .night .final-scene { transform: none; opacity: 1; transition: none; }
   .btn, .panel, summary .chev, .join-arrow { transition: none; }
   /* Kept separate: browsers without ::details-content would drop a whole selector list containing it. */

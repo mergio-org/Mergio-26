@@ -67,22 +67,22 @@ export const about = {
 export const steps = [
   {
     title: "Register with GitHub",
-    body: "One-click sign-in. Your GitHub account links your contributions automatically.",
+    body: "Sign in once. Your contributions are tracked automatically.",
     icon: "github" as const,
   },
   {
     title: "Choose a project",
-    body: "Browse approved repositories and pick one that matches your skills.",
+    body: "Pick a repository that matches your skills.",
     icon: "repo" as const,
   },
   {
     title: "Solve an issue",
-    body: "Get assigned a labelled issue, ask mentors for help, and open a pull request.",
+    body: "Grab a labelled issue and open a pull request, with mentors to help.",
     icon: "issue" as const,
   },
   {
     title: "Get merged",
-    body: "When your pull request is merged, points are added to your profile.",
+    body: "Points land on your profile the moment it's merged.",
     icon: "merge" as const,
   },
 ];
