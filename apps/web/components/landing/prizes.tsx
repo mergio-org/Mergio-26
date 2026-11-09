@@ -1,23 +1,17 @@
-import { mainPrize, prizes } from "@/lib/content";
+import { prizes } from "@/lib/content";
+import {
+  ContributorsScene,
+  EveryoneScene,
+  MaintainersScene,
+} from "./art/awards";
 import { Drift } from "./art/drift";
 import { Icon } from "./icon";
 import { SectionHead } from "./section-head";
 
-// Snow drifting over the top edge of each podium block.
-function SnowCap() {
-  return (
-    <svg
-      className="cap"
-      viewBox="0 0 100 14"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <path d="M0 0H100V7C96 7 95 12 90 12C85 12 84 8 78 8C72 8 71 13 64 13C57 13 56 8 50 8C44 8 43 12 37 12C31 12 30 7 24 7C18 7 17 11 11 11C6 11 4 8 0 8Z" />
-    </svg>
-  );
-}
-
+// Three award cards, each topped with a little winter scene. The contributors card comes first
+// in the markup (and on phones); on desktop it sits in the middle and rises above the others.
 export function Prizes() {
+  const { contributors, maintainers, everyone, sponsor } = prizes;
   return (
     <section className="section has-scene" id="prizes">
       <div className="aurora soft" aria-hidden="true" />
@@ -25,48 +19,68 @@ export function Prizes() {
       <div className="wrap">
         <SectionHead
           eyebrow="Prizes & recognition"
-          title="Your work,"
-          accent="recognised."
+          title="Everyone takes"
+          accent="something home."
           center
-        />
-        <div className="prizes">
-          <article className="prize main panel panel-featured reveal">
-            <span className="k">{mainPrize.kicker}</span>
-            <h3>{mainPrize.title}</h3>
-            <p>{mainPrize.body}</p>
-            {/* Listed 1st, 2nd, 3rd for screen readers; CSS arranges them 2nd, 1st, 3rd. */}
-            <ol className="podium">
-              {mainPrize.places.map(({ place, prize }, i) => (
-                <li key={place} className={`place-${i + 1}`}>
-                  {i === 0 && (
-                    <Icon name="trophy" size={28} className="trophy" />
-                  )}
-                  <SnowCap />
-                  <b>{place}</b>
-                  {prize ? (
-                    <span>{prize}</span>
-                  ) : (
-                    <span className="soon">Revealing soon</span>
-                  )}
-                </li>
-              ))}
-            </ol>
+        >
+          Prizes for top contributors and maintainers, and a certificate for
+          every participant.
+        </SectionHead>
+        <div className="awards">
+          <article className="award award-top panel panel-featured reveal">
+            <div className="award-scene tall">
+              <ContributorsScene />
+            </div>
+            <div className="award-body">
+              <span className="k">{contributors.kicker}</span>
+              <h3>{contributors.title}</h3>
+              <p>{contributors.body}</p>
+              <ol className="places">
+                {contributors.places.map(({ place, prize }, i) => (
+                  <li key={place} className={`m${i + 1}`}>
+                    <b>{place}</b>
+                    {prize ? (
+                      <span>{prize}</span>
+                    ) : (
+                      <span className="soon">Revealing soon</span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </div>
           </article>
-          {prizes.map((prize) => (
-            <article
-              key={prize.kicker}
-              className={`prize panel reveal${prize.href ? " prize-cta" : ""}`}
-            >
-              <span className="k">{prize.kicker}</span>
-              <h3>{prize.title}</h3>
-              <p>{prize.body}</p>
-              {prize.href && (
-                <a className="prize-link" href={prize.href}>
-                  {prize.cta} <span aria-hidden="true">→</span>
-                </a>
-              )}
-            </article>
-          ))}
+          <article className="award award-maint panel reveal">
+            <div className="award-scene">
+              <MaintainersScene />
+            </div>
+            <div className="award-body">
+              <span className="k">{maintainers.kicker}</span>
+              <h3>{maintainers.title}</h3>
+              <p>{maintainers.body}</p>
+            </div>
+          </article>
+          <article className="award award-all panel reveal">
+            <div className="award-scene">
+              <EveryoneScene />
+            </div>
+            <div className="award-body">
+              <span className="k">{everyone.kicker}</span>
+              <h3>{everyone.title}</h3>
+              <p>{everyone.body}</p>
+            </div>
+          </article>
+        </div>
+        <div className="sponsor-bar panel reveal">
+          <span className="tile-icon">
+            <Icon name="flake" size={18} />
+          </span>
+          <p>
+            <b>{sponsor.title}</b>
+            {sponsor.body}
+          </p>
+          <a className="btn btn-ghost btn-sm" href={sponsor.href}>
+            {sponsor.cta} <span aria-hidden="true">→</span>
+          </a>
         </div>
         <p className="note">
           Final prizes will be announced with our sponsors.

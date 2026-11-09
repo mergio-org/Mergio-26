@@ -40,7 +40,7 @@ export const about = {
       icon: "repo" as const,
     },
     { value: "48 h", label: "review turnaround", icon: "clock" as const },
-    { value: "1 merge", label: "earns a certificate", icon: "award" as const },
+    { value: "100%", label: "get a certificate", icon: "award" as const },
   ],
   roles: [
     {
@@ -189,45 +189,31 @@ export const timeline: Stage[] = [
 // Add `prize` to a place once it is confirmed; until then the podium shows "Revealing soon".
 type Place = { place: string; prize?: string };
 
-export const mainPrize = {
-  kicker: "Top contributors",
-  title: "Prizes for the top 3",
-  body: "Prizes, goodies and certificates of excellence for the highest scorers on the overall leaderboard.",
-  places: [{ place: "1st" }, { place: "2nd" }, { place: "3rd" }] as Place[],
-};
-
-type Prize = {
-  kicker: string;
-  title: string;
-  body: string;
-  cta?: string;
-  href?: string;
-};
-
-export const prizes: Prize[] = [
-  {
-    kicker: "Top performers",
-    title: "Swag & certificates",
-    body: "GDG and sponsor swag with certificates of merit.",
+// Three groups win something: top contributors, project maintainers, and every participant.
+export const prizes = {
+  contributors: {
+    kicker: "Contributors",
+    title: "Prizes for top contributors",
+    body: "Prizes, goodies and certificates of excellence for the highest scorers on the leaderboard.",
+    places: [{ place: "1st" }, { place: "2nd" }, { place: "3rd" }] as Place[],
   },
-  {
-    kicker: "Special awards",
-    title: "Category winners",
-    body: "Best First-Time Contributor, Top College, Best Mentor and Best Project Admin.",
+  maintainers: {
+    kicker: "Maintainers",
+    title: "Prizes for maintainers",
+    body: "Project maintainers who review, guide and merge contributions win prizes too.",
   },
-  {
-    kicker: "Everyone",
-    title: "Participation certificate",
-    body: "For every contributor with at least one merged pull request.",
+  everyone: {
+    kicker: "Participants",
+    title: "Certificates for everyone",
+    body: "Everyone who takes part in Mergio gets a certificate of participation.",
   },
-  {
-    kicker: "Sponsors",
-    title: "Become a sponsor",
-    body: "Help students ship their first open-source work. Reach out to the GDG KNIT team.",
-    cta: "Get in touch",
+  sponsor: {
+    title: "Sponsor Mergio",
+    body: "Help students ship their first open-source work.",
+    cta: "Become a sponsor",
     href: links.sponsor,
   },
-];
+};
 
 export const maintainerChecks = [
   "An active, open-source licensed repository",
