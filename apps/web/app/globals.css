@@ -40,11 +40,10 @@
   --scene-snow-o: .25;
   --scene-cap-o: .4;
   --scene-rim: #DCEBFA;
-  /* section details: trail nodes, stars, podium */
+  /* section details: trail nodes, stars */
   --node-bg: #0E1730;
   --on-ice: #0B0D12;
   --ice-glow: rgba(140, 203, 255, .45);
-  --podium-top: rgba(140, 203, 255, .16);
   --cap-o: .8;
   --ice-rgb: 140, 203, 255;
   --violet: #B79CFF;
@@ -54,6 +53,10 @@
   --bronze: #E3A57E;
   --moon-lit: #F2F7FF;
   --moon-dark: rgba(140, 203, 255, .08);
+  /* prize display windows: night sky with aurora colours, moonlit snow */
+  --award-sky: radial-gradient(70% 55% at 50% 35%, rgba(90, 150, 255, .3), transparent 70%), radial-gradient(45% 40% at 16% 16%, rgba(70, 210, 190, .18), transparent 70%), radial-gradient(40% 36% at 86% 20%, rgba(150, 120, 255, .18), transparent 70%), linear-gradient(180deg, #081022, #10203C 72%, #1A2E4C);
+  --award-snow: #DAE7F6;
+  --award-flake: rgba(255, 255, 255, .9);
   --scene-rim-o: .22;
 }
 * { box-sizing: border-box; }
@@ -340,36 +343,70 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .timeline h3 { margin-top: 8px; font-size: 16px; font-weight: 600; }
 .timeline p { margin-top: 6px; font-size: 14px; color: var(--muted); }
 
-/* prizes */
-.prizes { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 16px; }
-.prize { padding: 28px; }
-.prize.main { grid-row: span 2; display: flex; flex-direction: column; }
-.prize .k { font-family: var(--mono); font-size: 12px; color: var(--ice); text-transform: uppercase; letter-spacing: .08em; }
-.prize h3 { margin-top: 12px; font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
-.prize.main h3 { font-size: 32px; }
-.prize p { margin-top: 8px; color: var(--muted); font-size: 15px; }
-/* podium: blocks are listed 1st, 2nd, 3rd and reordered to 2nd, 1st, 3rd */
-.podium { list-style: none; margin: auto 0 0; padding: 68px 0 0; display: flex; align-items: flex-end; gap: 8px; border-bottom: 1px solid var(--panel-border-strong); }
-.podium li { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 20px 8px 12px; text-align: center; border: 1px solid var(--panel-border); border-bottom: 0; border-radius: 10px 10px 0 0; background: linear-gradient(180deg, var(--podium-top), var(--ice-faint)); }
-.podium .place-1 { order: 2; min-height: 136px; border-color: var(--panel-border-strong); }
-.podium .place-2 { order: 1; min-height: 104px; }
-.podium .place-3 { order: 3; min-height: 80px; }
-.podium .cap { position: absolute; top: -1px; left: -1px; width: calc(100% + 2px); height: 14px; fill: var(--scene-snow); opacity: var(--cap-o); clip-path: inset(0 round 10px 10px 0 0); }
-[data-theme="light"] .podium .cap { filter: drop-shadow(0 1px 1px rgba(30, 60, 110, .18)); }
-.podium .trophy { position: absolute; top: -46px; left: 50%; margin-left: -14px; color: var(--ice); filter: drop-shadow(0 0 10px var(--ice-glow)); }
-.podium b { font-size: 24px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; }
-.podium .place-1 b { font-size: 32px; background: linear-gradient(180deg, #FFFFFF 35%, #BFE1FF 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-[data-theme="light"] .podium .place-1 b { background: linear-gradient(180deg, #0E1726 30%, #1F5FB8 100%); -webkit-background-clip: text; background-clip: text; }
-.podium span { font-size: 12px; color: var(--dim); }
-.podium .soon { background: linear-gradient(90deg, var(--dim) 30%, var(--text) 50%, var(--dim) 70%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 3.2s linear infinite; }
+/* prizes: three award cards, each topped with a framed winter scene (art/awards.tsx). On desktop
+   the contributors card sits in the middle and, with align-items: end, rises above the others
+   like the top step of a podium. */
+.awards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: end; }
+.award-maint { order: 1; }
+.award-top { order: 2; }
+.award-all { order: 3; }
+.award { overflow: hidden; display: flex; flex-direction: column; }
+.award:hover { border-color: var(--panel-border-strong); }
+.award-scene { position: relative; isolation: isolate; height: 210px; margin: 10px 10px 0; overflow: hidden; border: 1px solid var(--panel-border); border-radius: 12px; background: var(--award-sky); color: var(--ice); }
+.award-scene.tall { height: 250px; }
+.award-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* snow falling inside each window: dot tiles sliding down exactly one tile height, so it loops seamlessly */
+.award-scene::before, .award-scene::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--fall) * -1); bottom: 0; z-index: 1; pointer-events: none; animation: snowfall 11s linear infinite; }
+.award-scene::before { --fall: 140px; background: radial-gradient(circle at 20px 30px, var(--award-flake) 0 1.5px, transparent 2.1px), radial-gradient(circle at 96px 74px, var(--award-flake) 0 1.1px, transparent 1.7px), radial-gradient(circle at 58px 118px, var(--award-flake) 0 1.3px, transparent 1.9px), radial-gradient(circle at 124px 12px, var(--award-flake) 0 1px, transparent 1.6px) 0 0 / 140px 140px; opacity: .85; }
+.award-scene::after { --fall: 100px; animation-duration: 17s; background: radial-gradient(circle at 12px 64px, var(--award-flake) 0 .9px, transparent 1.4px), radial-gradient(circle at 70px 22px, var(--award-flake) 0 .8px, transparent 1.3px), radial-gradient(circle at 44px 88px, var(--award-flake) 0 .7px, transparent 1.2px) 0 0 / 100px 100px; opacity: .55; }
+@keyframes snowfall { to { transform: translateY(var(--fall)); } }
+.award-body { padding: 22px 24px 26px; }
+.award .k { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ice); }
+.award h3 { margin-top: 10px; font-size: 21px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25; }
+.award-top h3 { font-size: 24px; }
+.award p { margin-top: 8px; color: var(--muted); font-size: 15px; }
+/* the three prize tiers under the contributors card, tinted gold, silver and bronze */
+.places { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.places li { --m: var(--gold); display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 4px; text-align: center; border: 1px solid color-mix(in srgb, var(--m) 35%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--m) 9%, transparent); }
+.places .m2 { --m: var(--silver); }
+.places .m3 { --m: var(--bronze); }
+.places b { font-size: 18px; font-weight: 600; color: var(--m); }
+.places span { font-size: 11px; color: var(--dim); white-space: nowrap; }
+.soon { background: linear-gradient(90deg, var(--dim) 30%, var(--text) 50%, var(--dim) 70%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 3.2s linear infinite; }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+/* scene art */
+.aw-star { fill: #FFFFFF; }
+[data-theme="light"] .aw-star { display: none; }
+.aw-far { fill: rgba(var(--ice-rgb), .16); }
+.aw-snow, .aw-cap { fill: var(--award-snow); }
+.aw-shadow { fill: rgba(8, 16, 32, .3); }
+.aw-block { stroke: rgba(var(--ice-rgb), .6); stroke-width: 1; }
+.aw-num { font-family: var(--sans); font-weight: 700; text-anchor: middle; }
+.aw-num.n1 { fill: var(--gold); }
+.aw-num.n2 { fill: var(--silver); }
+.aw-num.n3 { fill: var(--bronze); }
+.aw-engrave { fill: none; stroke: rgba(16, 36, 64, .5); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.aw-engrave.gold { stroke: rgba(96, 62, 10, .55); }
+.aw-ring { fill: none; stroke: rgba(16, 36, 64, .3); stroke-width: 1.2; }
+.aw-spark { fill: #FFE7A8; animation: twinkle 3.6s ease-in-out infinite; }
+.aw-ribbon-a { fill: #8CCBFF; opacity: .85; }
+.aw-ribbon-b { fill: #B79CFF; opacity: .8; }
+.aw-paper { stroke: rgba(var(--ice-rgb), .45); stroke-width: 1; }
+.aw-paper.p1 { fill: #EEF5FD; }
+.aw-paper.p2 { fill: #D3E3F4; }
+.aw-paper.p3 { fill: #B9CEE6; }
+.aw-line { fill: none; stroke: #93ABC6; stroke-width: 2; stroke-linecap: round; }
+.aw-line.title { stroke: #5F7FA3; stroke-width: 3; }
+/* gentle motion: the medal swings from the top of the window, the trophy and certificates float */
+.swing { transform-box: view-box; transform-origin: 165px 0; animation: swing 5s ease-in-out infinite; }
+.bob { animation: bob 4.5s ease-in-out infinite; }
+@keyframes swing { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 /* the open sponsor slot reads as an invitation */
-.prize-cta { display: flex; flex-direction: column; border-style: dashed; border-color: var(--panel-border-strong); }
-.prize-cta:hover { border-color: var(--ice); }
-.prize-link { margin-top: auto; padding-top: 16px; display: inline-flex; align-items: center; gap: 8px; width: max-content; font-size: 15px; font-weight: 500; }
-.prize-link span { transition: transform .2s; }
-.prize-link:hover { color: var(--ice); }
-.prize-link:hover span { transform: translateX(4px); }
+.sponsor-bar { margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 14px 16px; border-style: dashed; border-color: var(--panel-border-strong); }
+.sponsor-bar:hover { border-color: var(--ice); }
+.sponsor-bar p { flex: 1 1 200px; color: var(--muted); font-size: 15px; }
+.sponsor-bar p b { margin-right: 8px; color: var(--text); font-weight: 600; }
 .note { margin-top: 16px; font-size: 14px; color: var(--dim); text-align: center; }
 
 /* maintainers */
@@ -464,9 +501,11 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   --text: #0E1726; --muted: #465366; --dim: #5D6A7C; --ice: #1F6FD1; --ice-soft: rgba(31, 111, 209, .10); --green: #1A8F57; color-scheme: light;
   --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .78)); --panel-border: rgba(31, 111, 209, .14); --panel-border-strong: rgba(31, 111, 209, .32);
   --panel-highlight: rgba(255, 255, 255, .9); --panel-shadow: 0 16px 36px -22px rgba(30, 60, 110, .30); --panel-glow: rgba(31, 111, 209, .10); --ice-faint: rgba(31, 111, 209, .06);
-  --node-bg: #FFFFFF; --on-ice: #FFFFFF; --ice-glow: rgba(31, 111, 209, .28); --podium-top: rgba(31, 111, 209, .12); --cap-o: 1;
+  --node-bg: #FFFFFF; --on-ice: #FFFFFF; --ice-glow: rgba(31, 111, 209, .28); --cap-o: 1;
   --ice-rgb: 31, 111, 209; --violet: #7C4DDB; --ski-blue: #2563EB; --gold: #B7861F; --silver: #6B7C93; --bronze: #A8603A;
-  --moon-lit: #FFFFFF; --moon-dark: #CFDCEC; }
+  --moon-lit: #FFFFFF; --moon-dark: #CFDCEC;
+  --award-sky: radial-gradient(60% 50% at 50% 28%, rgba(255, 240, 210, .75), transparent 70%), linear-gradient(180deg, #9CC4E9, #C3DBF2 80%);
+  --award-snow: #FFFFFF; --award-flake: rgba(255, 255, 255, .95); }
 [data-theme="light"] body::after { opacity: .025; }
 [data-theme="light"] .btn-primary, [data-theme="light"] .nav-cta { background: #0E1726; color: #FFFFFF; }
 [data-theme="light"] .btn-primary:hover, [data-theme="light"] .nav-cta:hover { background: #1F2A3D; }
@@ -539,8 +578,9 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .timeline li { padding: 4px 0 30px 38px; text-align: left; }
   .moon-phase { left: -.75px; top: 16px; width: 38px; height: 38px; margin: -19px 0 0 -19px; }
   .timeline li.active::before { left: -.75px; top: 16px; width: 52px; height: 52px; margin: -26px 0 0 -26px; }
-  .prizes { grid-template-columns: 1fr; }
-  .prize.main { grid-row: auto; }
+  .awards { grid-template-columns: 1fr; max-width: 540px; margin-inline: auto; }
+  .awards > .award { order: 0; }
+  .award-scene.tall { height: 230px; }
   .maint { grid-template-columns: 1fr; padding: 32px; }
   .faq { grid-template-columns: 1fr; gap: 32px; }
   .foot-top { grid-template-columns: 1fr; gap: 40px; }
@@ -556,14 +596,8 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 }
 @media (max-width: 640px) {
   :root { --section-y: 72px; --head-gap: 40px; }
-  .podium .place-1 { min-height: 120px; }
-  .podium .place-2 { min-height: 94px; }
-  .podium .place-3 { min-height: 74px; }
-  .podium b { font-size: 20px; }
-  .podium .place-1 b { font-size: 26px; }
-  .podium li { padding: 18px 4px 10px; }
-  .podium span { font-size: 11px; line-height: 1.3; }
-  .score, .prize { padding: 24px; }
+  .score { padding: 24px; }
+  .award-body { padding: 20px 20px 22px; }
   [data-theme="light"] .day-sun { top: 84px; right: 12px; width: 44px; height: 44px; box-shadow: 0 0 30px 10px rgba(255, 220, 160, .5), 0 0 90px 40px rgba(255, 230, 190, .3); }
   .day-clouds .c2, .day-clouds .c3 { display: none; }
   .day-clouds .c1 { top: 74px; left: -50px; width: 110px; }
@@ -589,7 +623,8 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .aurora, .stars .tw, .day-clouds svg, .timeline li.active::before, .moonpath-arc .twinkle, .podium .soon, .crystal { animation: none; }
+  .aurora, .stars .tw, .day-clouds svg, .timeline li.active::before, .moonpath-arc .twinkle, .soon, .crystal { animation: none; }
+  .award-scene::before, .award-scene::after, .swing, .bob, .aw-spark { animation: none; }
   .summit-glow, .step:last-child .step-node::after { display: none; }
   .board-wrap:not(.in) .board-rows li.you, .board-wrap:not(.in) .board-rows li.passed, .board-wrap:not(.in) .board-rows li.you .gain { transform: none; }
   .board-rows li.you, .board-rows li.passed, .board-rows li.you .gain { transition: none; }
