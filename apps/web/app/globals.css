@@ -32,6 +32,8 @@
   --panel-shadow: 0 24px 48px -30px rgba(0, 0, 0, .9);
   --panel-glow: rgba(140, 203, 255, .06);
   --ice-faint: rgba(180, 205, 255, .045);
+  --pill-fill: rgba(8, 12, 22, .9);
+  --pill-badge: linear-gradient(140deg, #E6F5FF, #8CCBFF 55%, #A99BFF);
   /* scene art below the hero (s-* classes on the SVG paths) */
   --scene-far: #111A2B;
   --scene-near: #0E1626;
@@ -69,8 +71,12 @@ h1, h2, h3, p { margin: 0; }
 img, svg { display: block; }
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
 .eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ice); }
-.eyebrow-pill { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 9px; border: 1px solid var(--panel-border); border-radius: 999px; background: var(--ice-faint); line-height: 1.4; }
-.eyebrow-pill svg { flex: none; }
+/* section label pill: an aurora-gradient outline around a midnight fill, a glowing ice badge with
+   the section's icon, then the label */
+.eyebrow-pill { display: inline-flex; align-items: center; gap: 11px; padding: 5px 18px 5px 5px; border: 1px solid transparent; border-radius: 999px; line-height: 1; font-size: 13px; font-weight: 500; letter-spacing: .14em; color: var(--text);
+  background: linear-gradient(var(--pill-fill), var(--pill-fill)) padding-box, linear-gradient(90deg, rgba(70, 210, 190, .6), rgba(var(--ice-rgb), .75), rgba(150, 120, 255, .6)) border-box;
+  box-shadow: 0 0 26px -10px rgba(var(--ice-rgb), .55), inset 0 1px 0 rgba(255, 255, 255, .05); }
+.eyebrow-icon { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--pill-badge); color: var(--on-ice); box-shadow: 0 0 14px rgba(var(--ice-rgb), .45); }
 .section { padding: var(--section-y) 0; }
 .section.has-scene { padding-bottom: calc(var(--section-y) + var(--scene-h)); }
 .section-head { max-width: 640px; margin-bottom: var(--head-gap); }
@@ -78,7 +84,7 @@ img, svg { display: block; }
 /* Closing phrase in ice blue, the same move as the hero tagline. */
 /* nowrap keeps a multi-word accent ("for everyone.") together instead of orphaning its first word. */
 .section-head h2 span, .maint h2 span { color: var(--ice); white-space: nowrap; }
-.section-head h2 { font-size: clamp(32px, 4.4vw, 48px); line-height: 1.1; letter-spacing: -.03em; font-weight: 600; margin-top: 14px; }
+.section-head h2 { font-size: clamp(32px, 4.4vw, 48px); line-height: 1.1; letter-spacing: -.03em; font-weight: 600; margin-top: 18px; }
 .section-head p { margin-top: 16px; font-size: 18px; color: var(--muted); }
 
 /* buttons */
@@ -571,6 +577,7 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(255, 255, 255, .78)); --panel-border: rgba(31, 111, 209, .14); --panel-border-strong: rgba(31, 111, 209, .32);
   --panel-highlight: rgba(255, 255, 255, .9); --panel-shadow: 0 16px 36px -22px rgba(30, 60, 110, .30); --panel-glow: rgba(31, 111, 209, .10); --ice-faint: rgba(31, 111, 209, .06);
   --node-bg: #FFFFFF; --on-ice: #FFFFFF; --ice-glow: rgba(31, 111, 209, .28); --cap-o: 1;
+  --pill-fill: rgba(255, 255, 255, .92); --pill-badge: linear-gradient(140deg, #5AA2F0, #1F6FD1 55%, #7C4DDB);
   --ice-rgb: 31, 111, 209; --violet: #7C4DDB; --ski-blue: #2563EB; --gold: #B7861F; --silver: #6B7C93; --bronze: #A8603A;
   --award-sky: radial-gradient(60% 50% at 50% 28%, rgba(255, 240, 210, .75), transparent 70%), linear-gradient(180deg, #9CC4E9, #C3DBF2 80%);
   --award-snow: #FFFFFF; --award-flake: rgba(255, 255, 255, .95); }
@@ -669,6 +676,8 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 }
 @media (max-width: 640px) {
   :root { --section-y: 72px; --head-gap: 40px; }
+  .eyebrow-pill { gap: 9px; padding-right: 14px; font-size: 12px; letter-spacing: .1em; }
+  .eyebrow-icon { width: 26px; height: 26px; }
   .score { padding: 24px; }
   .award-body { padding: 20px 20px 22px; }
   [data-theme="light"] .day-sun { top: 84px; right: 12px; width: 44px; height: 44px; box-shadow: 0 0 30px 10px rgba(255, 220, 160, .5), 0 0 90px 40px rgba(255, 230, 190, .3); }

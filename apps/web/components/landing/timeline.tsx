@@ -32,6 +32,7 @@ export function Timeline() {
       <div className="wrap">
         <SectionHead
           eyebrow="Timeline"
+          icon="calendar"
           title="How the program"
           accent="runs."
           center

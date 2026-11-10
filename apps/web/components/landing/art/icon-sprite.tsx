@@ -179,6 +179,19 @@ export function IconSprite() {
             <path d="M8.6 13.3 7 21l5-2.5 5 2.5-1.6-7.7" />
           </g>
         </symbol>
+        <symbol id="i-help" viewBox="0 0 24 24">
+          <g
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.4 9.4a2.7 2.7 0 0 1 5.2 1c0 1.8-2.6 2.3-2.6 3.9" />
+          </g>
+          <circle cx="12" cy="17.2" r="1.1" fill="currentColor" />
+        </symbol>
       </defs>
     </svg>
   );

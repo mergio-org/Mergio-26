@@ -10,7 +10,12 @@ export function Faq() {
     <section className="section" id="faq">
       <div className="wrap faq">
         <div className="faq-side">
-          <SectionHead eyebrow="FAQ" title="Questions," accent="answered.">
+          <SectionHead
+            eyebrow="FAQ"
+            icon="help"
+            title="Questions,"
+            accent="answered."
+          >
             Everything you need to know before you join.
           </SectionHead>
           <div className="faq-help panel reveal">

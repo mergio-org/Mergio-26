@@ -11,6 +11,7 @@ export function About() {
       <div className="wrap">
         <SectionHead
           eyebrow="About Mergio"
+          icon="flake"
           title="A month of open source,"
           accent="for everyone."
           center

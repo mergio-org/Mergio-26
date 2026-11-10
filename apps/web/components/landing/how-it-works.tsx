@@ -11,6 +11,7 @@ export function HowItWorks() {
       <div className="wrap">
         <SectionHead
           eyebrow="How it works"
+          icon="pr"
           title="Four steps from sign-up to"
           accent="leaderboard."
           center
