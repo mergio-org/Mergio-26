@@ -10,7 +10,8 @@
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "db:push": "turbo run db:push",
-    "db:studio": "turbo run db:studio"
+    "db:studio": "turbo run db:studio",
+    "export:registrations": "pnpm --silent --filter backend export:registrations"
   },
   "devDependencies": {
     "pnpm": "12.6.0",
