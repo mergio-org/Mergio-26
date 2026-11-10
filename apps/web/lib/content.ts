@@ -28,7 +28,7 @@ export const navItems = [
 export const heroHighlights = [
   "One month",
   "Free to join",
-  "Open to every college",
+  "Open to everyone",
   "Beginner friendly",
 ];
 
@@ -235,7 +235,7 @@ export const prizes = {
   },
   sponsor: {
     title: "Sponsor Mergio",
-    body: "Help students ship their first open-source work.",
+    body: "Help new contributors ship their first open-source work.",
     cta: "Become a sponsor",
     href: links.sponsor,
   },

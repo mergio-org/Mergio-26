@@ -31,9 +31,9 @@ export function Hero() {
           Contribute to open source <span>this winter.</span>
         </p>
         <p className="lead">
-          A month-long open-source program for students from every college. Work
-          on real projects, learn from mentors, and climb a live leaderboard
-          with every merged pull request.
+          A month-long open-source program for everyone, from first-timers to
+          seasoned developers. Work on real projects, learn from mentors, and
+          climb a live leaderboard with every merged pull request.
         </p>
         <div className="hero-cta">
           <a className="btn btn-primary" href={links.register}>
