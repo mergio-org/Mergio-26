@@ -1,120 +1,90 @@
 import type { CSSProperties } from "react";
 import { timeline } from "@/lib/content";
+import { Icon } from "./icon";
 import { SectionHead } from "./section-head";
 
-// The program as one lunar cycle: each stage is a moon on the moon's path across the sky,
-// waxing from a new moon (first stage) to a full moon (results).
-
-// Lit part of a waxing moon of radius r centred on (0, 0); k is the lit fraction (0 new, 1 full).
-// The right half is lit; the terminator is half an ellipse that bulges right for a crescent and
-// left for a gibbous moon.
-function litPath(k: number, r: number) {
-  const rx = (Math.abs(1 - 2 * k) * r).toFixed(2);
-  const sweep = k > 0.5 ? 1 : 0;
-  return `M0 ${-r}A${r} ${r} 0 0 1 0 ${r}A${rx} ${r} 0 0 ${sweep} 0 ${-r}Z`;
-}
-
-function MoonPhase({ phase }: { phase: number }) {
+// Snow drifting over the top edge of each stage card.
+function SnowCap() {
   return (
-    <svg className="moon-phase" viewBox="-22 -22 44 44" aria-hidden="true">
-      <circle className="moon-dark" r="20" />
-      {phase > 0 && <path className="moon-lit" d={litPath(phase, 20)} />}
+    <svg
+      className="tl-cap"
+      viewBox="0 0 100 10"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path d="M0 0H100V5C96 5 95 9 90 9C85 9 84 6 78 6C72 6 71 10 64 10C57 10 56 6 50 6C44 6 43 9 37 9C31 9 30 5 24 5C18 5 17 8 11 8C6 8 4 6 0 6Z" />
     </svg>
   );
 }
 
-// The arc lives in a 1000×120 box stretched to the list width: a quadratic curve whose ends sit
-// on the first and last column centres, so each stage's x is its column centre and its y (px)
-// comes from the same curve.
-const n = timeline.length;
-const x0 = 500 / n;
-const x1 = 1000 - x0;
-const low = 100;
-const peak = -60;
-const curveY = (t: number) => low - 2 * (low - peak) * t * (1 - t);
-const arc = `M${x0} ${low}Q500 ${peak} ${x1} ${low}`;
-
-// The arc from the first moon up to t, via de Casteljau: the first half of the split curve.
-function arcTo(t: number) {
-  const qx = x0 + (500 - x0) * t;
-  const qy = low + (peak - low) * t;
-  const bx = qx + (500 + (x1 - 500) * t - qx) * t;
-  return `M${x0} ${low}Q${qx.toFixed(1)} ${qy.toFixed(1)} ${bx.toFixed(1)} ${curveY(t).toFixed(1)}`;
-}
-
-// A few stars around the arc: [x, y, radius, twinkle delay in s].
-const stars = [
-  [150, 30, 1.4, 0],
-  [270, 74, 1, 1.2],
-  [360, 8, 1.6, 2.4],
-  [455, 58, 1, 0.6],
-  [560, 18, 1.3, 3],
-  [660, 70, 1, 1.8],
-  [735, 26, 1.5, 0.9],
-  [880, 52, 1.1, 2.1],
-  [60, 56, 1, 3.4],
-];
-
+// A frozen trail of six stages: hexagonal ice-crystal nodes joined by a trail (aurora-lit where
+// done, flowing dashes from the current stage to the next), each above a snow-capped card.
+// Stages before the `active` one render as done. Cards cascade in when the list is revealed.
+// Dates: each card has a date pill showing `when` from content.ts, or "Date TBA" until it is set.
+// The "Dates to be announced soon" badge under the heading hides once every stage has a date.
 export function Timeline() {
   const current = timeline.findIndex((stage) => stage.active);
+  const allDated = timeline.every((stage) => stage.when);
 
   return (
     <section className="section" id="timeline">
+      <div className="aurora soft alt" aria-hidden="true" />
       <div className="wrap">
         <SectionHead
           eyebrow="Timeline"
+          icon="calendar"
           title="How the program"
           accent="runs."
           center
         >
-          One month, one lunar cycle. Exact dates will be announced soon.
+          Six stages, one winter.
         </SectionHead>
-        <div className="moonpath reveal" style={{ "--n": n } as CSSProperties}>
-          <svg
-            className="moonpath-arc"
-            viewBox="0 0 1000 120"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            {stars.map(([x, y, r, delay]) => (
-              <circle
-                key={`${x}-${y}`}
-                className="twinkle"
-                cx={x}
-                cy={y}
-                r={r}
-                style={{ animationDelay: `${delay}s` }}
-              />
-            ))}
-            <path className="arc" d={arc} />
-            {current > 0 && (
-              <path className="arc done" d={arcTo(current / (n - 1))} />
-            )}
-          </svg>
-          <ol className="timeline">
-            {timeline.map((stage, i) => {
-              const t = n > 1 ? i / (n - 1) : 0;
-              const state =
-                i === current ? "active" : i < current ? "done" : undefined;
-              return (
-                <li
-                  key={stage.title}
-                  className={state}
-                  aria-current={state === "active" ? "step" : undefined}
-                  style={{ "--y": `${curveY(t)}px` } as CSSProperties}
-                >
-                  <MoonPhase phase={t} />
-                  <span className="when">
-                    {stage.when ?? `Stage ${String(i + 1).padStart(2, "0")}`}
+        {!allDated && (
+          <p className="tl-tba reveal">
+            <span className="tl-tba-dot" aria-hidden="true" />
+            <Icon name="calendar" size={14} />
+            Dates to be announced soon
+          </p>
+        )}
+        <ol
+          className="tl reveal"
+          style={{ "--n": timeline.length } as CSSProperties}
+        >
+          {timeline.map((stage, i) => {
+            const state =
+              i === current ? "active" : i < current ? "done" : "upcoming";
+            return (
+              <li
+                key={stage.title}
+                className={`tl-step ${state}`}
+                aria-current={state === "active" ? "step" : undefined}
+                style={{ "--i": i } as CSSProperties}
+              >
+                <span className="tl-node" aria-hidden="true">
+                  <span className="tl-hex">
+                    <Icon
+                      name={state === "done" ? "check" : stage.icon}
+                      size={22}
+                    />
                   </span>
-                  {state === "active" && <span className="now">Now</span>}
+                </span>
+                <div className="tl-card">
+                  <SnowCap />
+                  <span className="tl-when">
+                    Stage {String(i + 1).padStart(2, "0")}
+                  </span>
                   <h3>{stage.title}</h3>
                   <p>{stage.body}</p>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
+                  <span className={`tl-date${stage.when ? " set" : ""}`}>
+                    <Icon name="calendar" size={12} />
+                    {stage.when ?? "Date TBA"}
+                  </span>
+                  {state === "active" && <span className="tl-now">Now</span>}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

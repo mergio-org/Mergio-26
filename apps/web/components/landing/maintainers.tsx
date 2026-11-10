@@ -141,7 +141,7 @@ export function Maintainers() {
           <Crystal className="m1" />
           <PanelScene />
           <div>
-            <Eyebrow>For maintainers</Eyebrow>
+            <Eyebrow icon="repo">For maintainers</Eyebrow>
             <h2>
               Bring your project to <span>Mergio.</span>
             </h2>

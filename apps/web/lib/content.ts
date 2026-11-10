@@ -1,5 +1,7 @@
 // All copy for the landing page. Values in [brackets] are placeholders until they are finalised.
 
+import type { IconName } from "@/components/landing/icon";
+
 export const links = {
   register: "#register",
   githubSignIn: "#",
@@ -168,32 +170,44 @@ export const repoPreview = {
 
 // Add `when` (e.g. "Dec 1") once a date is fixed; until then the stage number is shown.
 // Mark the stage in progress with `active: true`; earlier stages render as done.
-type Stage = { title: string; body: string; when?: string; active?: boolean };
+type Stage = {
+  title: string;
+  body: string;
+  icon: IconName;
+  when?: string;
+  active?: boolean;
+};
 
 export const timeline: Stage[] = [
   {
     title: "Planning",
+    icon: "calendar",
     body: "Team, sponsors and platform setup.",
     active: true,
   },
   {
     title: "Call for projects",
+    icon: "repo",
     body: "Maintainers submit their repositories.",
   },
   {
     title: "Registration",
-    body: "Sign-ups open for all students.",
+    icon: "github",
+    body: "Sign-ups open for everyone.",
   },
   {
     title: "Onboarding",
+    icon: "sprout",
     body: "Opening ceremony and Git sessions.",
   },
   {
     title: "Contribution month",
+    icon: "merge",
     body: "Contribute and climb the leaderboard.",
   },
   {
     title: "Results",
+    icon: "trophy",
     body: "Winners announced at the closing ceremony.",
   },
 ];

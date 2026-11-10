@@ -1,11 +1,20 @@
 import type { ReactNode } from "react";
-import { Icon } from "./icon";
+import { Icon, type IconName } from "./icon";
 
-// Pill label above a heading, echoing the hero's "Winter edition" pill.
-export function Eyebrow({ children }: { children: ReactNode }) {
+// Section label pill: a glowing ice badge with the section's icon, then the label, inside an
+// aurora-gradient outline. Echoes the hero's "Winter edition" pill.
+export function Eyebrow({
+  children,
+  icon = "flake",
+}: {
+  children: ReactNode;
+  icon?: IconName;
+}) {
   return (
     <span className="eyebrow eyebrow-pill">
-      <Icon name="flake" size={12} />
+      <span className="eyebrow-icon">
+        <Icon name={icon} size={14} />
+      </span>
       {children}
     </span>
   );
@@ -14,12 +23,14 @@ export function Eyebrow({ children }: { children: ReactNode }) {
 // `accent` is the closing phrase of the title, shown in ice blue like the hero tagline.
 export function SectionHead({
   eyebrow,
+  icon,
   title,
   accent,
   center,
   children,
 }: {
   eyebrow: string;
+  icon?: IconName;
   title: string;
   accent?: string;
   center?: boolean;
@@ -27,7 +38,7 @@ export function SectionHead({
 }) {
   return (
     <div className={`section-head reveal${center ? " center" : ""}`}>
-      <Eyebrow>{eyebrow}</Eyebrow>
+      <Eyebrow icon={icon}>{eyebrow}</Eyebrow>
       <h2>
         {title}
         {accent && (

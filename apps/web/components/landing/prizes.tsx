@@ -19,6 +19,7 @@ export function Prizes() {
       <div className="wrap">
         <SectionHead
           eyebrow="Prizes & recognition"
+          icon="trophy"
           title="Everyone takes"
           accent="something home."
           center
