@@ -1,18 +1,19 @@
 import { prisma } from "@repo/db";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Icon } from "@/components/landing/icon";
 import { requireUser } from "@/lib/dal";
-import { ROLES, roleInfo } from "@/lib/registration";
-import { signOutAction } from "../actions";
+import { roleInfo } from "@/lib/registration";
+import { AccountNav } from "../account-nav";
 
 export const metadata: Metadata = {
   title: "Dashboard — Mergio",
 };
 
-const statusLabel = {
-  APPROVED: "Approved",
-  PENDING: "Under review",
-  REJECTED: "Not approved",
+const statusStyle = {
+  APPROVED: { label: "Approved", color: "text-(color:--green)" },
+  PENDING: { label: "Under review", color: "text-(color:--gold)" },
+  REJECTED: { label: "Not approved", color: "text-[#E5484D]" },
 } as const;
 
 export default async function DashboardPage() {
@@ -21,49 +22,54 @@ export default async function DashboardPage() {
     where: { userId: user.id },
     orderBy: { createdAt: "asc" },
   });
-  const held = new Set(registrations.map((registration) => registration.role));
+  const firstName = user.name.split(" ")[0] || user.githubLogin || "there";
+  const registered = registrations.length > 0;
 
   return (
-    <section className="auth-card panel">
-      <div className="auth-user">
-        {/* eslint-disable-next-line @next/next/no-img-element -- remote GitHub avatar, no loader configured */}
-        {user.image && <img src={user.image} alt="" width={44} height={44} />}
-        <div>
-          <b>{user.name}</b>
-          <span>@{user.githubLogin}</span>
-        </div>
-        <form action={signOutAction}>
-          <button className="btn btn-ghost btn-sm" type="submit">
-            Sign out
-          </button>
-        </form>
-      </div>
+    <div className="w-full max-w-2xl">
+      <AccountNav active="dashboard" />
 
-      <h1>{registrations.length ? "You're registered" : "You haven't registered yet"}</h1>
-      <p className="auth-lead">
-        {registrations.length
-          ? "We will email you as soon as Mergio opens. Role reviews happen before then."
-          : "Pick how you want to take part to get on the list."}
-      </p>
+      <section className="panel panel-featured px-8 py-14 text-center sm:px-14">
+        <span className="mx-auto mb-7 grid size-16 place-items-center rounded-full border border-(color:--panel-border-strong) bg-(color:--ice-soft) text-(color:--ice) shadow-[0_0_32px_-6px_var(--ice-glow)]">
+          <Icon name={registered ? "check" : "flake"} size={28} />
+        </span>
 
-      {registrations.length > 0 && (
-        <ul className="status-list">
-          {registrations.map((registration) => (
-            <li key={registration.id}>
-              <span>{roleInfo[registration.role].label}</span>
-              <span className={`status status-${registration.status.toLowerCase()}`}>
-                {statusLabel[registration.status]}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
+        <h1 className="bg-linear-to-b from-white from-35% to-[#BFE1FF] bg-clip-text pb-1 text-4xl leading-tight font-semibold tracking-tight text-balance text-transparent sm:text-5xl light:from-[#0E1726] light:to-[#1F5FB8]">
+          {registered ? `Thank you for registering, ${firstName}` : `Hey, ${firstName}`}
+        </h1>
 
-      {held.size < ROLES.length && (
-        <Link className="btn btn-ghost" href="/register">
-          {registrations.length ? "Add another role" : "Register now"}
-        </Link>
-      )}
-    </section>
+        <p className="mx-auto mt-4 max-w-md text-lg text-(color:--muted)">
+          {registered
+            ? "The participating organizations will be announced soon. Stay tuned."
+            : "You haven't registered yet. It takes a minute."}
+        </p>
+
+        {registered ? (
+          <ul className="mt-9 mb-0 flex list-none flex-wrap justify-center gap-2 p-0">
+            {registrations.map((registration) => {
+              const status = statusStyle[registration.status];
+              return (
+                <li
+                  key={registration.id}
+                  className="inline-flex items-center gap-2.5 rounded-full border border-(color:--border-strong) py-1.5 pr-3.5 pl-4 text-sm"
+                >
+                  <span className="font-medium">{roleInfo[registration.role].label}</span>
+                  <span
+                    className={`inline-flex items-center gap-1.5 font-mono text-xs tracking-wide uppercase ${status.color}`}
+                  >
+                    <span className="size-1.5 rounded-full bg-current" />
+                    {status.label}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <Link className="btn btn-primary mt-9" href="/register">
+            Register now
+          </Link>
+        )}
+      </section>
+    </div>
   );
 }
