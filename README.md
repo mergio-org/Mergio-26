@@ -77,12 +77,12 @@ The backend API runs at http://localhost:4000. `GET /health` checks that the ser
 Registration uses [Better Auth](https://www.better-auth.com) with GitHub as the only provider. We request only `read:user` and `user:email`, never repository access.
 
 1. On GitHub, go to **Settings > Developer settings > OAuth Apps > New OAuth App**.
-2. Set **Homepage URL** to `http://localhost:3001` and **Authorization callback URL** to `http://localhost:3001/api/auth/callback/github`.
+2. Set **Homepage URL** to `https://mergio.in`. Under **Redirect URIs** add `http://localhost:3001/api/auth/callback/github` and `https://mergio.in/api/auth/callback/github`. Leave wildcard matching, device flow and token expiry off.
 3. Copy the **Client ID** into `GITHUB_CLIENT_ID`. Generate a **Client secret** and copy it into `GITHUB_CLIENT_SECRET`.
 4. Generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32`, and set `BETTER_AUTH_URL="http://localhost:3001"`.
 5. Optional: list GitHub usernames in `ADMIN_GITHUB_LOGINS` (comma separated) to make them admins the next time they sign in.
 
-A GitHub OAuth App accepts only one callback URL, so create a second one for production with `https://mergio.in/api/auth/callback/github`, and set `BETTER_AUTH_URL="https://mergio.in"` there. Also set `AUTH_COOKIE_DOMAIN=".mergio.in"` in production so the session cookie is shared with `admin.mergio.in`.
+The same app serves dev and production because it has both redirect URIs. Each environment sets its own `BETTER_AUTH_URL` (`http://localhost:3001` locally, `https://mergio.in` in production), and Better Auth builds the redirect URI from it. Both environments share one client secret, so give teammates a separate dev app once more than one person runs the project locally. In production, also set `AUTH_COOKIE_DOMAIN=".mergio.in"` so the session cookie is shared with `admin.mergio.in`.
 
 Sign-in is checked in two places. `apps/web/proxy.ts` only looks for a session cookie and redirects early. The real check is `requireUser()` in `apps/web/lib/dal.ts`, so call it in every page and action that needs a signed-in user.
 
