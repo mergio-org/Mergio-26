@@ -633,3 +633,64 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   /* Kept separate: browsers without ::details-content would drop a whole selector list containing it. */
   .faq-list details::details-content { transition: none; }
 }
+
+/* account pages: /register and /dashboard */
+.auth-page { min-height: 100vh; background: radial-gradient(60% 40% at 50% 0%, rgba(var(--ice-rgb), .12), transparent 70%), var(--bg); }
+.auth-top { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; padding-bottom: 20px; }
+.auth-main { display: flex; justify-content: center; padding-top: 24px; padding-bottom: 96px; }
+.auth-card { width: 100%; max-width: 640px; padding: 36px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.auth-card h1 { font-size: clamp(28px, 4vw, 38px); line-height: 1.12; letter-spacing: -.03em; font-weight: 600; }
+.auth-lead { color: var(--muted); font-size: 17px; }
+.auth-card .btn { align-self: flex-start; }
+.auth-card .btn[disabled] { opacity: .55; cursor: not-allowed; }
+.auth-user { width: 100%; display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.auth-user img { border-radius: 50%; border: 1px solid var(--border-strong); }
+.auth-user div { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.3; }
+.auth-user b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.auth-user span { font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+.role-list { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 10px; }
+.role-list li { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; }
+.role-list b { font-weight: 600; }
+.role-list span { color: var(--muted); font-size: 15px; }
+
+.auth-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
+.role-set { border: 0; margin: 0; padding: 0; min-width: 0; }
+.role-set legend, .field label { font-size: 14px; font-weight: 600; margin-bottom: 8px; padding: 0; }
+.role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.role-card { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 14px; border: 1px solid var(--border-strong); border-radius: 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+.role-card:hover { border-color: var(--panel-border-strong); }
+.role-card.on { border-color: var(--ice); background: var(--ice-faint); }
+.role-card.held { cursor: default; opacity: .8; }
+.role-card input { position: absolute; top: 14px; right: 14px; width: 16px; height: 16px; accent-color: var(--ice); margin: 0; }
+.role-name { font-weight: 600; padding-right: 24px; }
+.role-blurb { font-size: 14px; color: var(--muted); line-height: 1.45; }
+.role-review { margin-top: 4px; font-family: var(--mono); font-size: 12px; color: var(--ice); }
+
+.field { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.field-row { display: flex; gap: 14px; }
+.field .opt { font-weight: 400; color: var(--dim); font-size: 13px; margin-left: 4px; }
+.field input, .field select { width: 100%; min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--text); font: 400 16px var(--sans); }
+.field input:focus-visible, .field select:focus-visible { outline: 2px solid var(--ice); outline-offset: 1px; }
+.field [aria-invalid="true"] { border-color: #E5484D; }
+.field-error, .form-alert { color: #E5484D; font-size: 14px; margin-top: 6px; }
+.form-alert { margin: 0; padding: 10px 14px; border: 1px solid currentColor; border-radius: 10px; }
+.field-hint { color: var(--dim); font-size: 14px; margin-top: 6px; }
+
+.consent { display: flex; flex-direction: column; gap: 10px; }
+.check { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: var(--muted); cursor: pointer; }
+.check input { width: 16px; height: 16px; margin: 4px 0 0; accent-color: var(--ice); flex: none; }
+.check a { color: var(--ice); text-decoration: underline; text-underline-offset: 3px; }
+
+.status-list { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 8px; }
+.status-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-weight: 600; }
+.status { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid currentColor; }
+.status-approved { color: var(--green); }
+.status-pending { color: var(--gold); }
+.status-rejected { color: #E5484D; }
+
+@media (max-width: 640px) {
+  .auth-card { padding: 24px 20px; }
+  .role-grid { grid-template-columns: 1fr; }
+  .field-row { flex-direction: column; }
+}
