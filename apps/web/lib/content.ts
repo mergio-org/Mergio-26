@@ -1,5 +1,7 @@
 // All copy for the landing page. Values in [brackets] are placeholders until they are finalised.
 
+import type { IconName } from "@/components/landing/icon";
+
 export const links = {
   register: "/register",
   githubSignIn: "/register",
@@ -26,7 +28,7 @@ export const navItems = [
 export const heroHighlights = [
   "One month",
   "Free to join",
-  "Open to every college",
+  "Open to everyone",
   "Beginner friendly",
 ];
 
@@ -140,48 +142,72 @@ export const repoPreview = {
     {
       title: "Fix broken link in the setup guide",
       labels: ["mergio:level-1", "good first issue"],
+      assignee: "icicle-js",
     },
     {
       title: "Add keyboard shortcuts to the editor",
       labels: ["mergio:level-2"],
+      assignee: "pinecone",
     },
-    { title: "Cache API responses on the client", labels: ["mergio:level-3"] },
+    {
+      title: "Cache API responses on the client",
+      labels: ["mergio:level-3"],
+      assignee: "aurora-dev",
+    },
     {
       title: "Improve README badges",
       labels: ["mergio:level-1"],
+      assignee: "frostbyte",
       merged: true,
     },
-  ] as { title: string; labels: string[]; merged?: boolean }[],
+  ] as {
+    title: string;
+    labels: string[];
+    assignee: string;
+    merged?: boolean;
+  }[],
 };
 
 // Add `when` (e.g. "Dec 1") once a date is fixed; until then the stage number is shown.
 // Mark the stage in progress with `active: true`; earlier stages render as done.
-type Stage = { title: string; body: string; when?: string; active?: boolean };
+type Stage = {
+  title: string;
+  body: string;
+  icon: IconName;
+  when?: string;
+  active?: boolean;
+};
 
 export const timeline: Stage[] = [
   {
     title: "Planning",
+    icon: "calendar",
     body: "Team, sponsors and platform setup.",
     active: true,
   },
   {
     title: "Call for projects",
+    icon: "repo",
     body: "Maintainers submit their repositories.",
   },
   {
     title: "Registration",
-    body: "Sign-ups open for all students.",
+    icon: "github",
+    body: "Sign-ups open for everyone.",
   },
   {
     title: "Onboarding",
+    icon: "sprout",
     body: "Opening ceremony and Git sessions.",
   },
   {
     title: "Contribution month",
+    icon: "merge",
     body: "Contribute and climb the leaderboard.",
   },
   {
     title: "Results",
+    icon: "trophy",
     body: "Winners announced at the closing ceremony.",
   },
 ];
@@ -209,23 +235,24 @@ export const prizes = {
   },
   sponsor: {
     title: "Sponsor Mergio",
-    body: "Help students ship their first open-source work.",
+    body: "Help new contributors ship their first open-source work.",
     cta: "Become a sponsor",
     href: links.sponsor,
   },
 };
 
+// What we look for in a project, shown as short tiles in the Maintainers section.
 export const maintainerChecks = [
-  "An active, open-source licensed repository",
-  "A README with working setup steps and a CONTRIBUTING guide",
-  "At least 10 open issues, including beginner-friendly ones",
-  "Pull request reviews within 48 hours during the program",
+  { text: "Active, open-source licensed repo", icon: "github" as const },
+  { text: "README with setup steps + CONTRIBUTING", icon: "repo" as const },
+  { text: "10+ open issues, some beginner-friendly", icon: "issue" as const },
+  { text: "Reviews within 48 hours", icon: "clock" as const },
 ];
 
 export const faqs = [
   {
     q: "Who can participate?",
-    a: "Any school or college student, from any institution, at any skill level.",
+    a: "Everyone. Students from any school or college, maintainers and mentors, at any skill level.",
   },
   { q: "Is there a registration fee?", a: "No. Mergio is completely free." },
   {
@@ -235,6 +262,10 @@ export const faqs = [
   {
     q: "How are points calculated?",
     a: "Only merged pull requests with the Mergio label on approved repositories earn points: 10, 25 or 45 depending on the issue level.",
+  },
+  {
+    q: "Do I get a certificate?",
+    a: "Yes. Every participant gets a certificate, and top contributors and maintainers win prizes.",
   },
   {
     q: "When does Mergio start?",
@@ -251,7 +282,7 @@ export const organiser = "GDG on Campus KNIT Sultanpur";
 export const footerFacts = [
   { value: "1 month", label: "of contributions" },
   { value: "Unlimited", label: "projects" },
-  { value: "Free", label: "for every student" },
+  { value: "Free", label: "for everyone" },
 ];
 
 export const footerColumns = [

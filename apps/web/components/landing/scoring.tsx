@@ -76,6 +76,7 @@ export function Scoring() {
       <div className="wrap">
         <SectionHead
           eyebrow="Scoring"
+          icon="chart"
           title="Clear, fair and"
           accent="transparent."
           center
