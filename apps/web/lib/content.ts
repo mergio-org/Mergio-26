@@ -140,18 +140,30 @@ export const repoPreview = {
     {
       title: "Fix broken link in the setup guide",
       labels: ["mergio:level-1", "good first issue"],
+      assignee: "icicle-js",
     },
     {
       title: "Add keyboard shortcuts to the editor",
       labels: ["mergio:level-2"],
+      assignee: "pinecone",
     },
-    { title: "Cache API responses on the client", labels: ["mergio:level-3"] },
+    {
+      title: "Cache API responses on the client",
+      labels: ["mergio:level-3"],
+      assignee: "aurora-dev",
+    },
     {
       title: "Improve README badges",
       labels: ["mergio:level-1"],
+      assignee: "frostbyte",
       merged: true,
     },
-  ] as { title: string; labels: string[]; merged?: boolean }[],
+  ] as {
+    title: string;
+    labels: string[];
+    assignee: string;
+    merged?: boolean;
+  }[],
 };
 
 // Add `when` (e.g. "Dec 1") once a date is fixed; until then the stage number is shown.
@@ -215,11 +227,12 @@ export const prizes = {
   },
 };
 
+// What we look for in a project, shown as short tiles in the Maintainers section.
 export const maintainerChecks = [
-  "An active, open-source licensed repository",
-  "A README with working setup steps and a CONTRIBUTING guide",
-  "At least 10 open issues, including beginner-friendly ones",
-  "Pull request reviews within 48 hours during the program",
+  { text: "Active, open-source licensed repo", icon: "github" as const },
+  { text: "README with setup steps + CONTRIBUTING", icon: "repo" as const },
+  { text: "10+ open issues, some beginner-friendly", icon: "issue" as const },
+  { text: "Reviews within 48 hours", icon: "clock" as const },
 ];
 
 export const faqs = [
