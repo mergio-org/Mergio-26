@@ -22,14 +22,16 @@
   --section-y: 96px;
   --head-gap: 56px;
   --scene-h: 120px;
-  /* frosted ice panel: the shared surface for every card below the hero */
-  --panel-bg: linear-gradient(180deg, rgba(140, 203, 255, .075), rgba(140, 203, 255, .025));
-  --panel-border: rgba(140, 203, 255, .14);
-  --panel-border-strong: rgba(140, 203, 255, .32);
-  --panel-highlight: rgba(255, 255, 255, .06);
-  --panel-shadow: 0 24px 48px -32px rgba(0, 0, 0, .8);
-  --panel-glow: rgba(140, 203, 255, .16);
-  --ice-faint: rgba(140, 203, 255, .06);
+  /* the shared surface for every card below the hero: midnight-black glass, a shade darker than the
+     night sky behind it, with a faint frost on the edges. Ice blue is kept for accents (icons,
+     labels, the current stage) rather than the card fill. */
+  --panel-bg: linear-gradient(180deg, rgba(10, 14, 24, .86), rgba(6, 9, 16, .9));
+  --panel-border: rgba(180, 205, 255, .09);
+  --panel-border-strong: rgba(180, 205, 255, .18);
+  --panel-highlight: rgba(220, 235, 255, .06);
+  --panel-shadow: 0 24px 48px -30px rgba(0, 0, 0, .9);
+  --panel-glow: rgba(140, 203, 255, .06);
+  --ice-faint: rgba(180, 205, 255, .045);
   /* scene art below the hero (s-* classes on the SVG paths) */
   --scene-far: #111A2B;
   --scene-near: #0E1626;
@@ -41,7 +43,7 @@
   --scene-cap-o: .4;
   --scene-rim: #DCEBFA;
   /* section details: trail nodes, stars */
-  --node-bg: #0E1730;
+  --node-bg: #0A0E18;
   --on-ice: #0B0D12;
   --ice-glow: rgba(140, 203, 255, .45);
   --cap-o: .8;
@@ -188,15 +190,13 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .final .wrap { position: relative; z-index: 1; }
 
 
-/* about: one frosted card (snow ledge, icicles, big stats, ways to join) over turning ice crystals */
+/* about: one frosted card (snow ledge, icicles, big stats, ways to join) */
+/* turning ice crystals, used in Maintainers and the footer */
 .night .aurora.bright { opacity: .45; }
 .crystal { position: absolute; z-index: -1; pointer-events: none; fill: none; stroke: var(--ice); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; animation: spin 120s linear infinite; }
-.crystal.c1 { width: 360px; top: 24px; left: max(-90px, calc(50% - 790px)); opacity: .13; }
-.crystal.c2 { width: 220px; bottom: 32px; right: max(-60px, calc(50% - 740px)); opacity: .1; animation-duration: 90s; animation-direction: reverse; }
-.crystal.c3 { width: 110px; top: 64px; right: max(40px, calc(50% - 470px)); opacity: .12; animation-duration: 70s; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .about-card { position: relative; margin-top: 12px;
-  background: linear-gradient(180deg, rgba(var(--ice-rgb), .08), transparent 160px), radial-gradient(60% 90% at 0% 0%, rgba(255, 255, 255, .05), transparent 60%), radial-gradient(50% 80% at 100% 100%, rgba(var(--ice-rgb), .1), transparent 60%), var(--panel-bg); }
+  background: radial-gradient(60% 90% at 0% 0%, rgba(255, 255, 255, .035), transparent 60%), var(--panel-bg); }
 .ledge { position: absolute; left: -1px; top: -12px; width: calc(100% + 2px); height: 36px; color: var(--ice); pointer-events: none; }
 .ledge .snow { fill: var(--scene-snow); opacity: var(--cap-o); }
 [data-theme="light"] .ledge .snow { filter: drop-shadow(0 2px 2px rgba(30, 60, 110, .2)); }
@@ -250,10 +250,10 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 /* scoring */
 .score-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 /* Levels are ski runs: they glow brighter, carry a tougher marker and a steeper slope (art/slope.tsx). */
-.score { --glow: .05; --edge: .14; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 10px;
-  background: radial-gradient(90% 70% at 50% 0%, rgba(var(--ice-rgb), var(--glow)), transparent 70%), var(--panel-bg); border-color: rgba(var(--ice-rgb), var(--edge)); }
-.score-2 { --glow: .11; --edge: .24; }
-.score-3 { --glow: .2; --edge: .42; box-shadow: inset 0 1px 0 var(--panel-highlight), 0 0 48px -16px rgba(var(--ice-rgb), .45), var(--panel-shadow); }
+.score { --glow: .02; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 10px;
+  background: radial-gradient(90% 70% at 50% 0%, rgba(var(--ice-rgb), var(--glow)), transparent 70%), var(--panel-bg); }
+.score-2 { --glow: .04; }
+.score-3 { --glow: .07; border-color: rgba(var(--ice-rgb), .3); box-shadow: inset 0 1px 0 var(--panel-highlight), 0 0 44px -18px rgba(var(--ice-rgb), .3), var(--panel-shadow); }
 .score-top { display: flex; align-items: center; justify-content: space-between; }
 .run { display: inline-flex; align-items: center; gap: 8px; font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .run-marker { flex: none; width: 14px; height: 14px; }
@@ -295,7 +295,7 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .board-ranks li + li, .board-rows li + li { margin-top: 2px; }
 .board-rows li { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 0 14px; border-radius: 10px; }
 .board-rows li:nth-child(odd):not(.you) { background: var(--ice-faint); }
-.board-rows li.you { position: relative; z-index: 1; background: rgba(var(--ice-rgb), .12); box-shadow: inset 0 0 0 1px rgba(var(--ice-rgb), .4); }
+.board-rows li.you { position: relative; z-index: 1; background: rgba(var(--ice-rgb), .08); box-shadow: inset 0 0 0 1px rgba(var(--ice-rgb), .3); }
 /* top three get ice-tinted gold, silver and bronze medals */
 .rank { display: grid; place-items: center; font: 600 14px var(--mono); color: var(--dim); }
 .rank.r1, .rank.r2, .rank.r3 { --m: var(--gold); }
@@ -350,7 +350,7 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 /* cards */
 .tl-card { position: relative; flex: 1; width: 100%; margin-top: 18px; padding: 22px 16px 18px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--panel-border); border-radius: 14px; background: var(--panel-bg); box-shadow: inset 0 1px 0 var(--panel-highlight), var(--panel-shadow); transition: border-color .25s; }
 .tl-step:hover .tl-card { border-color: var(--panel-border-strong); }
-.tl-step.active .tl-card { border-color: rgba(var(--ice-rgb), .5); background: radial-gradient(100% 70% at 50% 0%, rgba(var(--ice-rgb), .16), transparent 70%), var(--panel-bg); box-shadow: inset 0 1px 0 var(--panel-highlight), 0 0 40px -12px rgba(var(--ice-rgb), .55), var(--panel-shadow); }
+.tl-step.active .tl-card { border-color: rgba(var(--ice-rgb), .32); background: radial-gradient(100% 70% at 50% 0%, rgba(var(--ice-rgb), .07), transparent 70%), var(--panel-bg); box-shadow: inset 0 1px 0 var(--panel-highlight), 0 0 40px -14px rgba(var(--ice-rgb), .28), var(--panel-shadow); }
 .tl-cap { position: absolute; top: -1px; left: -1px; width: calc(100% + 2px); height: 10px; fill: var(--scene-snow); opacity: var(--cap-o); clip-path: inset(0 round 14px 14px 0 0); }
 [data-theme="light"] .tl-cap { filter: drop-shadow(0 1px 1px rgba(30, 60, 110, .18)); }
 .tl-when { display: block; font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
@@ -435,7 +435,7 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 /* maintainers: one frosted panel with aurora tints, a turning crystal and a snowdrift with pines
    along its bottom edge (extra bottom padding keeps content above the drift) */
 .maint { position: relative; isolation: isolate; overflow: hidden; padding: 52px 48px 120px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center;
-  background: radial-gradient(40% 55% at 95% 6%, rgba(70, 210, 190, .13), transparent 70%), radial-gradient(38% 50% at 72% 26%, rgba(150, 120, 255, .11), transparent 70%), radial-gradient(100% 70% at 50% 0%, var(--panel-glow), transparent 70%), var(--panel-bg); }
+  background: radial-gradient(40% 55% at 95% 6%, rgba(70, 210, 190, .05), transparent 70%), radial-gradient(38% 50% at 72% 26%, rgba(150, 120, 255, .04), transparent 70%), radial-gradient(100% 70% at 50% 0%, var(--panel-glow), transparent 70%), var(--panel-bg); }
 .maint-scene { position: absolute; left: 0; right: 0; bottom: 0; z-index: -1; width: 100%; height: 110px; pointer-events: none; }
 .maint .crystal.m1 { width: 300px; top: -90px; right: -80px; opacity: .1; }
 .maint h2 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.15; letter-spacing: -.03em; font-weight: 600; margin-top: 14px; }
@@ -501,7 +501,7 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .faq-list { display: flex; flex-direction: column; gap: 10px; interpolate-size: allow-keywords; }
 .faq-item { padding: 0 20px; border: 1px solid var(--panel-border); border-radius: 14px; background: var(--ice-faint); transition: border-color .2s, background-color .2s, box-shadow .25s; }
 .faq-item:hover { border-color: var(--panel-border-strong); }
-.faq-item[open] { border-color: rgba(var(--ice-rgb), .45); background: radial-gradient(90% 140% at 0% 0%, rgba(var(--ice-rgb), .12), transparent 60%), var(--panel-bg); box-shadow: 0 18px 40px -26px rgba(var(--ice-rgb), .6); }
+.faq-item[open] { border-color: rgba(var(--ice-rgb), .28); background: radial-gradient(90% 140% at 0% 0%, rgba(var(--ice-rgb), .05), transparent 60%), var(--panel-bg); box-shadow: 0 18px 40px -26px rgba(var(--ice-rgb), .25); }
 summary { list-style: none; cursor: pointer; padding: 18px 0; display: flex; align-items: center; gap: 14px; font-size: 16px; font-weight: 500; transition: color .2s; }
 summary::-webkit-details-marker { display: none; }
 summary:hover, details[open] summary { color: var(--ice); }
@@ -529,6 +529,7 @@ details p { padding: 0 0 20px 36px; color: var(--muted); font-size: 15px; }
 /* footer: a frosted card with a snow ledge sitting right under the final forest, a turning crystal,
    and a huge faint wordmark as the sign-off */
 .site-footer { position: relative; isolation: isolate; overflow: hidden; padding: 14px 0 0; }
+:root:not([data-theme="light"]) .site-footer { --panel-bg: linear-gradient(180deg, rgba(140, 203, 255, .075), rgba(140, 203, 255, .025)); --panel-border: rgba(140, 203, 255, .14); --panel-border-strong: rgba(140, 203, 255, .32); --panel-highlight: rgba(255, 255, 255, .06); --ice-faint: rgba(140, 203, 255, .06); }
 .site-footer .crystal.f1 { width: 280px; top: -30px; right: max(-70px, calc(50% - 660px)); opacity: .08; }
 .foot-card { position: relative; padding: 46px 40px 38px;
   background: radial-gradient(40% 80% at 100% 0%, rgba(70, 210, 190, .1), transparent 70%), radial-gradient(40% 80% at 0% 0%, rgba(150, 120, 255, .08), transparent 70%), var(--panel-bg); }
@@ -635,9 +636,6 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .about-stats li:nth-child(n + 3) { padding-top: 28px; border-top: 1px solid var(--panel-border); }
   .about-join { grid-template-columns: 1fr; }
   .join-item + .join-item { border-left: 0; border-top: 1px solid var(--panel-border); }
-  .crystal.c1 { width: 240px; left: -90px; }
-  .crystal.c2 { width: 160px; right: -60px; }
-  .crystal.c3 { display: none; }
   .board-wrap { grid-template-columns: 1fr; gap: 32px; margin-top: 64px; }
   /* the trail turns vertical: node on the left, card beside it, segments run down between nodes */
   .tl { grid-template-columns: 1fr; }

@@ -1,17 +1,13 @@
 import { about } from "@/lib/content";
-import { Crystal } from "./art/crystal";
 import { SnowLedge } from "./art/snow-ledge";
 import { Icon } from "./icon";
 import { SectionHead } from "./section-head";
 
-// One frosted card with the key numbers and the ways to join, over a winter backdrop.
+// One frosted card with the key numbers and the ways to join.
 export function About() {
   return (
     <section className="section" id="about">
       <div className="aurora soft bright" aria-hidden="true" />
-      <Crystal className="c1" />
-      <Crystal className="c2" />
-      <Crystal className="c3" />
       <div className="wrap">
         <SectionHead
           eyebrow="About Mergio"
