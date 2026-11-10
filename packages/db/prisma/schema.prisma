@@ -8,10 +8,125 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  CONTRIBUTOR
+  MAINTAINER
+  MENTOR
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ---------------------------------------------------------------------------
+// Auth (Better Auth). Column names follow what the Better Auth Prisma adapter
+// expects, so change them only together with lib/auth.ts in apps/web.
+// ---------------------------------------------------------------------------
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  // GitHub's numeric id lives in Account.accountId (it never changes).
+  // The login is refreshed on every sign-in because users can rename themselves.
+  githubLogin   String?  @unique
+  isAdmin       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions      Session[]
+  accounts      Account[]
+  profile       Profile?
+  registrations Registration[]
+}
+
+model Session {
+  id        String   @id
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ---------------------------------------------------------------------------
+// Registration
+// ---------------------------------------------------------------------------
+
+// One per user: details shared across every role they sign up for.
+model Profile {
+  id                      String    @id @default(cuid())
+  userId                  String    @unique
+  college                 String
+  graduationYear          Int
+  phone                   String?
+  discord                 String?
+  codeOfConductAcceptedAt DateTime
+  updatesOptIn            Boolean   @default(false)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// One per (user, role). A person can be a maintainer and a mentor at once, and
+// each role has its own review status.
+model Registration {
+  id        String             @id @default(cuid())
+  userId    String
+  role      Role
+  status    RegistrationStatus @default(PENDING)
+  // Optional repo link given at sign-up (maintainers). Project submission is a later phase.
+  repoUrl   String?
+  // Role-specific answers (e.g. mentor expertise) so the schema doesn't change per question.
+  answers   Json?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+  @@index([role, status])
 }
