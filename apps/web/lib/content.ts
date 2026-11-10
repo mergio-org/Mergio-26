@@ -1,10 +1,10 @@
 // All copy for the landing page. Values in [brackets] are placeholders until they are finalised.
 
 export const links = {
-  register: "#register",
-  githubSignIn: "#",
-  submitProject: "#",
-  mentor: "#",
+  register: "/register",
+  githubSignIn: "/register",
+  submitProject: "/register?role=maintainer",
+  mentor: "/register?role=mentor",
   maintainerGuide: "#",
   sponsor: "#",
   discord: "#",
