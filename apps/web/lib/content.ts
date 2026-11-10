@@ -238,7 +238,7 @@ export const maintainerChecks = [
 export const faqs = [
   {
     q: "Who can participate?",
-    a: "Any school or college student, from any institution, at any skill level.",
+    a: "Everyone. Students from any school or college, maintainers and mentors, at any skill level.",
   },
   { q: "Is there a registration fee?", a: "No. Mergio is completely free." },
   {
@@ -248,6 +248,10 @@ export const faqs = [
   {
     q: "How are points calculated?",
     a: "Only merged pull requests with the Mergio label on approved repositories earn points: 10, 25 or 45 depending on the issue level.",
+  },
+  {
+    q: "Do I get a certificate?",
+    a: "Yes. Every participant gets a certificate, and top contributors and maintainers win prizes.",
   },
   {
     q: "When does Mergio start?",
@@ -264,7 +268,7 @@ export const organiser = "GDG on Campus KNIT Sultanpur";
 export const footerFacts = [
   { value: "1 month", label: "of contributions" },
   { value: "Unlimited", label: "projects" },
-  { value: "Free", label: "for every student" },
+  { value: "Free", label: "for everyone" },
 ];
 
 export const footerColumns = [

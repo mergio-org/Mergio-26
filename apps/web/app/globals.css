@@ -466,24 +466,34 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 .toast-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--dim); }
 .maint:not(.in) .crowd, .maint:not(.in) .repo-toast { opacity: 0; transform: translateY(12px); }
 
-/* faq */
-.faq { display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; }
+/* faq: a sticky left column (heading + "still have questions" card) and one frosted tile per
+   question; the open tile glows and its +/- toggle turns into a filled minus */
+.faq { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 56px; align-items: start; }
+.faq-side { position: sticky; top: 112px; }
 .faq .section-head { margin-bottom: 0; }
-.faq-list { padding: 4px 28px; }
-.faq-list details + details { border-top: 1px solid var(--panel-border); }
-summary { list-style: none; cursor: pointer; padding: 22px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 17px; font-weight: 500; }
+.faq-help { position: relative; margin-top: 36px; padding: 32px 24px 24px; }
+.faq-help h3 { margin-top: 16px; font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+.faq-help p { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.faq-help .btn { margin-top: 18px; }
+.faq-list { display: flex; flex-direction: column; gap: 10px; interpolate-size: allow-keywords; }
+.faq-item { padding: 0 20px; border: 1px solid var(--panel-border); border-radius: 14px; background: var(--ice-faint); transition: border-color .2s, background-color .2s, box-shadow .25s; }
+.faq-item:hover { border-color: var(--panel-border-strong); }
+.faq-item[open] { border-color: rgba(var(--ice-rgb), .45); background: radial-gradient(90% 140% at 0% 0%, rgba(var(--ice-rgb), .12), transparent 60%), var(--panel-bg); box-shadow: 0 18px 40px -26px rgba(var(--ice-rgb), .6); }
+summary { list-style: none; cursor: pointer; padding: 18px 0; display: flex; align-items: center; gap: 14px; font-size: 16px; font-weight: 500; transition: color .2s; }
 summary::-webkit-details-marker { display: none; }
-summary { transition: color .2s; }
 summary:hover, details[open] summary { color: var(--ice); }
-summary .chev { color: var(--dim); transition: transform .25s ease, color .2s; flex: none; }
-details[open] summary .chev { transform: rotate(180deg); color: var(--ice); }
-details p { padding: 0 0 22px; color: var(--muted); max-width: 620px; }
+.faq-num { flex: none; min-width: 22px; font: 500 12px var(--mono); color: var(--dim); transition: color .2s; }
+details[open] .faq-num { color: var(--ice); }
+.faq-q { flex: 1; }
+.faq-toggle { position: relative; flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--panel-border-strong); background: var(--ice-faint); color: var(--muted); transition: background-color .25s, color .25s, border-color .25s, transform .3s; }
+.faq-toggle::before, .faq-toggle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 1.6px; margin: -.8px 0 0 -6px; border-radius: 2px; background: currentColor; transition: transform .3s; }
+.faq-toggle::after { transform: rotate(90deg); }
+details[open] .faq-toggle { color: var(--on-ice); background: var(--ice); border-color: transparent; transform: rotate(180deg); }
+details[open] .faq-toggle::after { transform: rotate(0deg); }
+details p { padding: 0 0 20px 36px; color: var(--muted); font-size: 15px; }
 /* Smooth open/close where ::details-content is supported; other browsers toggle instantly. */
-.faq-list { interpolate-size: allow-keywords; }
 .faq-list details::details-content { block-size: 0; overflow: hidden; transition: block-size .3s ease, content-visibility .3s allow-discrete; }
 .faq-list details[open]::details-content { block-size: auto; }
-.section-head p a { color: var(--ice); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ice) 40%, transparent); text-underline-offset: 3px; }
-.section-head p a:hover { text-decoration-color: currentColor; }
 
 /* final */
 .final { position: relative; overflow: hidden; isolation: isolate; text-align: center; padding: calc(var(--section-y) + 32px) 0 calc(var(--section-y) + 104px); }
@@ -493,8 +503,12 @@ details p { padding: 0 0 22px; color: var(--muted); max-width: 620px; }
 .final p { margin: 18px auto 0; max-width: 520px; color: var(--muted); font-size: 18px; }
 .final .hero-cta { margin-top: 32px; }
 
-/* footer: on the snowy ground under the final forest (same colour as the body, so no background) */
-.site-footer { padding: 40px 0 32px; }
+/* footer: a frosted card with a snow ledge sitting right under the final forest, a turning crystal,
+   and a huge faint wordmark as the sign-off */
+.site-footer { position: relative; isolation: isolate; overflow: hidden; padding: 14px 0 0; }
+.site-footer .crystal.f1 { width: 280px; top: -30px; right: max(-70px, calc(50% - 660px)); opacity: .08; }
+.foot-card { position: relative; padding: 46px 40px 38px;
+  background: radial-gradient(40% 80% at 100% 0%, rgba(70, 210, 190, .1), transparent 70%), radial-gradient(40% 80% at 0% 0%, rgba(150, 120, 255, .08), transparent 70%), var(--panel-bg); }
 .foot-top { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr); gap: 48px; }
 .site-footer .brand { width: max-content; height: auto; padding: 0; font-size: 18px; }
 .foot-brand p { margin-top: 14px; max-width: 340px; color: var(--muted); font-size: 14px; }
@@ -506,8 +520,14 @@ details p { padding: 0 0 22px; color: var(--muted); max-width: 620px; }
 .foot-cols ul { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .foot-cols a { color: var(--muted); font-size: 14px; transition: color .15s; }
 .foot-cols a:hover { color: var(--text); }
-.foot-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--panel-border); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; color: var(--dim); font-size: 13px; }
+.foot-bottom { padding: 22px 4px 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; color: var(--dim); font-size: 13px; }
 .foot-bottom b { color: var(--muted); font-weight: 600; }
+.foot-end { display: inline-flex; align-items: center; gap: 18px; }
+.to-top { color: var(--muted); transition: color .15s; }
+.to-top:hover { color: var(--ice); }
+/* frosted wordmark; the negative margin tucks its lower part off the bottom of the page */
+.foot-mark { margin: 8px 0 -.2em; text-align: center; font-size: clamp(110px, 21vw, 300px); font-weight: 700; line-height: 1; letter-spacing: -.065em; user-select: none; pointer-events: none;
+  background: linear-gradient(180deg, rgba(var(--ice-rgb), .2), rgba(var(--ice-rgb), .02) 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* reveal on scroll */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
@@ -611,7 +631,8 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .crowd { right: -6px; }
   .faq { grid-template-columns: 1fr; gap: 32px; }
   .foot-top { grid-template-columns: 1fr; gap: 40px; }
-  .faq-list { padding: 0 20px; }
+  .faq-side { position: static; }
+  .faq-help { margin-top: 28px; }
 }
 /* below 960px the mountain is hidden and the steps stack along a vertical trail */
 @media (max-width: 960px) {
@@ -640,6 +661,9 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .hero { padding: 112px 0 150px; }
   .score-grid { grid-template-columns: 1fr; }
   .foot-cols { grid-template-columns: 1fr 1fr; row-gap: 32px; }
+  .foot-card { padding: 36px 22px 28px; }
+  .faq-item { padding: 0 16px; }
+  details p { padding-left: 0; }
   .about-stats span { font-size: 13px; }
   .board-body { grid-template-columns: 26px minmax(0, 1fr); gap: 6px; padding-left: 2px; }
   .board-rows li { grid-template-columns: 32px minmax(0, 1fr) auto auto; gap: 10px; padding: 0 10px; }
@@ -663,7 +687,7 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .board-wrap:not(.in) .board-rows li.you, .board-wrap:not(.in) .board-rows li.passed, .board-wrap:not(.in) .board-rows li.you .gain { transform: none; }
   .board-rows li.you, .board-rows li.passed, .board-rows li.you .gain { transition: none; }
   .night .final-scene { transform: none; opacity: 1; transition: none; }
-  .btn, .panel, summary .chev, .join-arrow { transition: none; }
+  .btn, .panel, .join-arrow, .faq-item, .faq-toggle, .faq-toggle::before, .faq-toggle::after { transition: none; }
   /* Kept separate: browsers without ::details-content would drop a whole selector list containing it. */
   .faq-list details::details-content { transition: none; }
 }
