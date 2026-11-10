@@ -7,7 +7,7 @@ import { themeInitScript } from "@/lib/theme";
 const title =
   "Mergio — Winter Open Source Program by GDG on Campus KNIT Sultanpur";
 const description =
-  "Mergio is a month-long winter open-source program by GDG on Campus KNIT Sultanpur. Open to students from every college.";
+  "Mergio is a month-long winter open-source program by GDG on Campus KNIT Sultanpur. Open to everyone.";
 
 export const metadata: Metadata = {
   title,
