@@ -51,8 +51,6 @@
   --gold: #F2C66D;
   --silver: #C7D3E3;
   --bronze: #E3A57E;
-  --moon-lit: #F2F7FF;
-  --moon-dark: rgba(140, 203, 255, .08);
   /* prize display windows: night sky with aurora colours, moonlit snow */
   --award-sky: radial-gradient(70% 55% at 50% 35%, rgba(90, 150, 255, .3), transparent 70%), radial-gradient(45% 40% at 16% 16%, rgba(70, 210, 190, .18), transparent 70%), radial-gradient(40% 36% at 86% 20%, rgba(150, 120, 255, .18), transparent 70%), linear-gradient(180deg, #081022, #10203C 72%, #1A2E4C);
   --award-snow: #DAE7F6;
@@ -321,27 +319,52 @@ header.scrolled .pnav { background: rgba(16, 19, 26, .86); box-shadow: 0 14px 44
 /* Pinned to the last column so rows without a gain chip still line up. */
 .pts { grid-column: 4; min-width: 44px; text-align: right; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* timeline: one lunar cycle, new moon to full moon, along the moon's path across the sky.
-   Each stage sets --y (its height on the arc, from timeline.tsx); the list sets --n columns. */
-.moonpath { position: relative; }
-.moonpath::before { content: ""; position: absolute; left: 50%; top: -70px; z-index: -1; width: min(900px, 100%); height: 320px; transform: translateX(-50%); pointer-events: none; background: radial-gradient(closest-side, rgba(var(--ice-rgb), .1), transparent); }
-.moonpath-arc { position: absolute; left: 0; top: 0; width: 100%; height: 120px; overflow: visible; pointer-events: none; }
-.moonpath-arc .arc { fill: none; stroke: rgba(var(--ice-rgb), .35); stroke-width: 1.5; stroke-dasharray: 3 7; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.moonpath-arc .arc.done { stroke: var(--ice); stroke-dasharray: none; opacity: .8; }
-.moonpath-arc .twinkle { fill: var(--text); animation: twinkle 4.5s ease-in-out infinite; }
-.timeline { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); }
-.timeline li { position: relative; padding: 156px 10px 0; text-align: center; }
-.moon-phase { position: absolute; left: 50%; top: var(--y); width: 54px; height: 54px; margin: -27px 0 0 -27px; overflow: visible; filter: drop-shadow(0 0 10px rgba(var(--ice-rgb), .35)); }
-.moon-dark { fill: var(--moon-dark); stroke: rgba(var(--ice-rgb), .4); stroke-width: 1; }
-.moon-lit { fill: var(--moon-lit); }
-.timeline li.active .moon-phase { filter: drop-shadow(0 0 16px var(--ice-glow)); }
-/* halo pulsing around the current stage's moon */
-.timeline li.active::before { content: ""; position: absolute; left: 50%; top: var(--y); width: 72px; height: 72px; margin: -36px 0 0 -36px; border-radius: 50%; border: 1px solid var(--ice); animation: beacon 2.6s ease-out infinite; }
-.timeline .when { font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
-.timeline .now { margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: var(--ice); color: var(--on-ice); font: 600 11px var(--sans); vertical-align: 1px; }
-.timeline li.active .when { color: var(--ice); }
-.timeline h3 { margin-top: 8px; font-size: 16px; font-weight: 600; }
-.timeline p { margin-top: 6px; font-size: 14px; color: var(--muted); }
+/* timeline: a frozen trail. Each stage is a hexagonal ice-crystal node above a snow-capped card;
+   each step draws the trail segment to the next one (::after), aurora-lit when done and flowing
+   from the current stage. The list sets --n columns and --g gap; steps set --i for the cascade. */
+.tl { --g: 14px; position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); gap: var(--g); }
+.tl::before { content: ""; position: absolute; left: 0; right: 0; top: -40px; height: 140px; z-index: -1; pointer-events: none; filter: blur(30px); opacity: .55;
+  background: linear-gradient(90deg, transparent, rgba(70, 210, 190, .22) 20%, rgba(90, 150, 255, .26) 50%, rgba(150, 120, 255, .22) 80%, transparent); }
+.tl-step { position: relative; display: flex; flex-direction: column; align-items: center; transition: opacity .6s ease, transform .6s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--i) * 90ms + .1s); }
+.tl:not(.in) .tl-step { opacity: 0; transform: translateY(18px); }
+/* trail segment from this node to the next */
+.tl-step:not(:last-child)::after { content: ""; position: absolute; top: 30px; left: calc(50% + 34px); width: calc(100% + var(--g) - 68px); height: 2px; border-radius: 2px;
+  background: repeating-linear-gradient(90deg, rgba(var(--ice-rgb), .35) 0 6px, transparent 6px 12px); }
+.tl-step.done::after { background: linear-gradient(90deg, #46D2BE, var(--ice), #9678FF); box-shadow: 0 0 10px rgba(var(--ice-rgb), .5); }
+.tl-step.active::after { background: repeating-linear-gradient(90deg, var(--ice) 0 8px, transparent 8px 16px) 0 0 / 32px 100%; animation: trail-flow 1.2s linear infinite; opacity: .9; }
+@keyframes trail-flow { to { background-position: 32px 0; } }
+@keyframes trail-flow-down { to { background-position: 0 32px; } }
+/* hexagonal nodes: .tl-node carries the glow (drop-shadow survives the hexagon clip), .tl-hex is
+   the border colour and its ::before the inner face */
+.tl-node { position: relative; z-index: 1; display: block; width: 54px; height: 60px; filter: drop-shadow(0 0 12px var(--node-glow, transparent)); }
+.tl-hex { position: relative; display: grid; place-items: center; width: 100%; height: 100%; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: var(--hex-edge, var(--panel-border-strong)); color: var(--muted); }
+.tl-hex::before { content: ""; position: absolute; inset: 1.5px; clip-path: inherit; background: var(--hex-face, linear-gradient(var(--ice-faint), var(--ice-faint)), var(--node-bg)); }
+.tl-hex svg { position: relative; }
+.tl-step.done .tl-node { --node-glow: rgba(var(--ice-rgb), .35); }
+.tl-step.done .tl-hex { --hex-edge: var(--ice); --hex-face: linear-gradient(rgba(var(--ice-rgb), .18), rgba(var(--ice-rgb), .18)), var(--node-bg); color: var(--ice); }
+.tl-step.active .tl-node { --node-glow: rgba(var(--ice-rgb), .7); }
+.tl-step.active .tl-hex { --hex-edge: linear-gradient(135deg, #46D2BE, var(--ice), #9678FF); --hex-face: linear-gradient(160deg, #DDF1FF, var(--ice) 55%, #9C8BFF); color: #0B0D12; }
+/* a soft hexagon rippling out behind the current node */
+.tl-step.active .tl-node::after { content: ""; position: absolute; inset: 0; z-index: -1; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: rgba(var(--ice-rgb), .45); animation: hex-pulse 2.4s ease-out infinite; }
+@keyframes hex-pulse { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.35); opacity: 0; } }
+/* cards */
+.tl-card { position: relative; flex: 1; width: 100%; margin-top: 18px; padding: 22px 16px 18px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--panel-border); border-radius: 14px; background: var(--panel-bg); box-shadow: inset 0 1px 0 var(--panel-highlight), var(--panel-shadow); transition: border-color .25s; }
+.tl-step:hover .tl-card { border-color: var(--panel-border-strong); }
+.tl-step.active .tl-card { border-color: rgba(var(--ice-rgb), .5); background: radial-gradient(100% 70% at 50% 0%, rgba(var(--ice-rgb), .16), transparent 70%), var(--panel-bg); box-shadow: inset 0 1px 0 var(--panel-highlight), 0 0 40px -12px rgba(var(--ice-rgb), .55), var(--panel-shadow); }
+.tl-cap { position: absolute; top: -1px; left: -1px; width: calc(100% + 2px); height: 10px; fill: var(--scene-snow); opacity: var(--cap-o); clip-path: inset(0 round 14px 14px 0 0); }
+[data-theme="light"] .tl-cap { filter: drop-shadow(0 1px 1px rgba(30, 60, 110, .18)); }
+.tl-when { display: block; font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+.tl-step.active .tl-when, .tl-step.done .tl-when { color: var(--ice); }
+.tl-card h3 { margin-top: 8px; font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
+.tl-card p { margin: 6px 0 14px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+/* date slot: "Date TBA" (dashed) until `when` is set, then the date (solid ice) */
+.tl-date { margin-top: auto; display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px dashed var(--panel-border-strong); border-radius: 999px; font: 500 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+.tl-date.set { border-style: solid; border-color: rgba(var(--ice-rgb), .45); background: var(--ice-faint); color: var(--ice); }
+/* "Dates to be announced soon" badge under the heading */
+.tl-tba { width: max-content; max-width: 100%; margin: calc(20px - var(--head-gap)) auto 48px; display: flex; align-items: center; gap: 8px; padding: 7px 16px 7px 12px; border: 1px dashed rgba(var(--ice-rgb), .45); border-radius: 999px; background: var(--ice-faint); font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ice); }
+.tl-tba-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ice); animation: tba-pulse 2s ease-out infinite; }
+@keyframes tba-pulse { from { box-shadow: 0 0 0 0 rgba(var(--ice-rgb), .6); } to { box-shadow: 0 0 0 8px rgba(var(--ice-rgb), 0); } }
+.tl-now { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); padding: 2px 10px; border-radius: 999px; background: var(--ice); color: var(--on-ice); font: 600 11px var(--sans); letter-spacing: .02em; box-shadow: 0 0 16px var(--ice-glow); }
 
 /* prizes: three award cards, each topped with a framed winter scene (art/awards.tsx). On desktop
    the contributors card sits in the middle and, with align-items: end, rises above the others
@@ -548,7 +571,6 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   --panel-highlight: rgba(255, 255, 255, .9); --panel-shadow: 0 16px 36px -22px rgba(30, 60, 110, .30); --panel-glow: rgba(31, 111, 209, .10); --ice-faint: rgba(31, 111, 209, .06);
   --node-bg: #FFFFFF; --on-ice: #FFFFFF; --ice-glow: rgba(31, 111, 209, .28); --cap-o: 1;
   --ice-rgb: 31, 111, 209; --violet: #7C4DDB; --ski-blue: #2563EB; --gold: #B7861F; --silver: #6B7C93; --bronze: #A8603A;
-  --moon-lit: #FFFFFF; --moon-dark: #CFDCEC;
   --award-sky: radial-gradient(60% 50% at 50% 28%, rgba(255, 240, 210, .75), transparent 70%), linear-gradient(180deg, #9CC4E9, #C3DBF2 80%);
   --award-snow: #FFFFFF; --award-flake: rgba(255, 255, 255, .95); }
 [data-theme="light"] body::after { opacity: .025; }
@@ -617,12 +639,17 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
   .crystal.c2 { width: 160px; right: -60px; }
   .crystal.c3 { display: none; }
   .board-wrap { grid-template-columns: 1fr; gap: 32px; margin-top: 64px; }
-  /* the arc becomes a vertical dashed line with the moons on it */
-  .moonpath::before, .moonpath-arc { display: none; }
-  .timeline { grid-template-columns: 1fr; margin-left: 20px; border-left: 1.5px dashed rgba(var(--ice-rgb), .35); }
-  .timeline li { padding: 4px 0 30px 38px; text-align: left; }
-  .moon-phase { left: -.75px; top: 16px; width: 38px; height: 38px; margin: -19px 0 0 -19px; }
-  .timeline li.active::before { left: -.75px; top: 16px; width: 52px; height: 52px; margin: -26px 0 0 -26px; }
+  /* the trail turns vertical: node on the left, card beside it, segments run down between nodes */
+  .tl { grid-template-columns: 1fr; }
+  .tl::before { display: none; }
+  .tl-step { flex-direction: row; align-items: flex-start; gap: 16px; }
+  .tl-step:not(:last-child)::after { top: 68px; left: 26px; width: 2px; height: auto; bottom: calc(-1 * var(--g) - 6px);
+    background: repeating-linear-gradient(180deg, rgba(var(--ice-rgb), .35) 0 6px, transparent 6px 12px); }
+  .tl-step.done::after { background: linear-gradient(180deg, #46D2BE, var(--ice), #9678FF); }
+  .tl-step.active::after { background: repeating-linear-gradient(180deg, var(--ice) 0 8px, transparent 8px 16px) 0 0 / 100% 32px; animation-name: trail-flow-down; }
+  .tl-node { flex: none; }
+  .tl-card { margin-top: 0; align-items: flex-start; text-align: left; }
+  .tl-now { left: auto; right: 14px; transform: none; }
   .awards { grid-template-columns: 1fr; max-width: 540px; margin-inline: auto; }
   .awards > .award { order: 0; }
   .award-scene.tall { height: 230px; }
@@ -679,7 +706,9 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .aurora, .stars .tw, .day-clouds svg, .timeline li.active::before, .moonpath-arc .twinkle, .soon, .crystal { animation: none; }
+  .aurora, .stars .tw, .day-clouds svg, .soon, .crystal, .tl-step.active::after, .tl-step.active .tl-node::after, .tl-tba-dot { animation: none; }
+  .tl-step { transition: none; }
+  .tl:not(.in) .tl-step { opacity: 1; transform: none; }
   .award-scene::before, .award-scene::after, .swing, .bob, .aw-spark { animation: none; }
   .crowd, .repo-toast { transition: none; }
   .maint:not(.in) .crowd, .maint:not(.in) .repo-toast { opacity: 1; transform: none; }
