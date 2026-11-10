@@ -38,3 +38,6 @@ dist/
 
 # prisma
 packages/db/src/generated/
+
+# Exported registrations contain personal data
+registrations*.csv
