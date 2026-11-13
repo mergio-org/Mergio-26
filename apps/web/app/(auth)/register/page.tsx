@@ -1,15 +1,29 @@
 import { prisma } from "@repo/db";
 import type { Metadata } from "next";
+import type { IconName } from "@/components/landing/icon";
 import { Icon } from "@/components/landing/icon";
 import { getSession } from "@/lib/dal";
-import { ROLES, parseRole, roleInfo } from "@/lib/registration";
+import { ROLES, parseRole, roleInfo, type RoleName } from "@/lib/registration";
 import { signInWithGitHub, signOutAction } from "../actions";
 import { RegisterForm } from "./register-form";
+import { GdgLogo } from "@/components/landing/gdg-logo";
 
 export const metadata: Metadata = {
   title: "Register — Mergio",
   description: "Sign in with GitHub and register for Mergio.",
 };
+
+const ROLE_ICONS: Record<RoleName, IconName> = {
+  CONTRIBUTOR: "pr",
+  MAINTAINER: "repo",
+  MENTOR: "mentor",
+};
+
+const JOIN_FACTS: { icon: IconName; text: string }[] = [
+  { icon: "calendar", text: "One month of contributions, free to join" },
+  { icon: "clock", text: "Mentors review your pull requests within 48 hours" },
+  { icon: "award", text: "A certificate for every merged pull request" },
+];
 
 export default async function RegisterPage({
   searchParams,
@@ -21,30 +35,83 @@ export default async function RegisterPage({
 
   if (!session) {
     return (
-      <section className="auth-card panel">
-        <span className="eyebrow">Register</span>
-        <h1>Join Mergio this winter</h1>
-        <p className="auth-lead">
-          Sign in with GitHub, tell us how you want to take part, and we will be
-          in touch when the program begins. We only read your public profile and
-          email. We never ask for access to your repositories.
-        </p>
-        <ul className="role-list">
-          {ROLES.map((role) => (
-            <li key={role}>
-              <b>{roleInfo[role].label}</b>
-              <span>{roleInfo[role].blurb}</span>
-            </li>
-          ))}
-        </ul>
-        <form action={signInWithGitHub}>
-          {preselect && <input type="hidden" name="role" value={preselect} />}
-          <button className="btn btn-primary" type="submit">
-            <Icon name="github" size={18} />
-            Continue with GitHub
-          </button>
-        </form>
-      </section>
+      <div className="join">
+        <section className="join-pitch">
+          <GdgLogo className="join-logo" />
+          <h1>
+            Join Mergio <span>this winter.</span>
+          </h1>
+          <p className="auth-lead">
+            A month of real open-source work, with mentors by your side and a
+            leaderboard that counts every merge. Sign in to save your spot.
+          </p>
+          <ul className="join-facts">
+            {JOIN_FACTS.map((fact) => (
+              <li key={fact.text}>
+                <span className="tile-icon">
+                  <Icon name={fact.icon} size={18} />
+                </span>
+                {fact.text}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section
+          className="join-card panel panel-featured"
+          aria-labelledby="join-title"
+        >
+          <span className="join-step">Step 1 of 2 · Sign in</span>
+          <h2 id="join-title">How do you want to take part?</h2>
+          <form action={signInWithGitHub} className="join-form">
+            <fieldset className="join-roles">
+              <legend className="sr-only">Choose a role</legend>
+              {ROLES.map((role) => (
+                <label key={role} className="join-role">
+                  <input
+                    type="radio"
+                    name="role"
+                    value={role}
+                    defaultChecked={role === (preselect ?? "CONTRIBUTOR")}
+                  />
+                  <span className="tile-icon">
+                    <Icon name={ROLE_ICONS[role]} size={18} />
+                  </span>
+                  <span className="join-role-text">
+                    <b>{roleInfo[role].label}</b>
+                    <span>{roleInfo[role].blurb}</span>
+                  </span>
+                  <span className="join-radio" aria-hidden="true" />
+                </label>
+              ))}
+            </fieldset>
+            <p className="join-hint">
+              You can add more roles after you sign in.
+            </p>
+            <button className="btn btn-primary join-submit" type="submit">
+              <Icon name="github" size={18} />
+              Continue with GitHub
+            </button>
+          </form>
+          <p className="join-privacy">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="4" y="11" width="16" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            We only read your public profile and email. Never your repositories.
+          </p>
+        </section>
+      </div>
     );
   }
 
@@ -72,7 +139,11 @@ export default async function RegisterPage({
           </button>
         </form>
       </div>
-      <h1>{registrations.length ? "Add another role" : "Complete your registration"}</h1>
+      <h1>
+        {registrations.length
+          ? "Add another role"
+          : "Complete your registration"}
+      </h1>
       <RegisterForm
         defaults={{
           college: profile?.college ?? "",
