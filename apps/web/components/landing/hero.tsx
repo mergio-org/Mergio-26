@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { heroHighlights, links } from "@/lib/content";
 import { DayClouds } from "./art/day-clouds";
 import { HeroTrees } from "./art/hero-trees";
@@ -25,15 +26,22 @@ export function Hero() {
         <span className="pill">
           <b>Winter edition</b>Registrations opening soon
         </span>
-        <p className="presents">GDG on Campus KNIT Sultanpur presents</p>
+        <Image
+          className="presents-logo"
+          src="/Google Developer Groups On Campus KNIT Logo (1).png"
+          alt="Google Developer Groups on Campus KNIT"
+          width={2048}
+          height={1024}
+          priority
+        />
+        <p className="presents">presents</p>
         <h1 className="wordmark">Mergio</h1>
         <p className="tagline">
           Contribute to open source <span>this winter.</span>
         </p>
         <p className="lead">
-          A month-long open-source program for everyone, from first-timers to
-          seasoned developers. Work on real projects, learn from mentors, and
-          climb a live leaderboard with every merged pull request.
+          A month-long open-source program for students everywhere. Build, learn,
+          and climb the leaderboard with every merged pull request.
         </p>
         <div className="hero-cta">
           <a className="btn btn-primary" href={links.register}>
