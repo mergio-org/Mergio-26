@@ -8,7 +8,8 @@
     "build": "tsup",
     "start": "node --env-file-if-exists=.env dist/index.js",
     "lint": "eslint src --max-warnings 0",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "export:registrations": "tsx --env-file-if-exists=.env src/scripts/export-registrations.ts"
   },
   "dependencies": {
     "@repo/db": "workspace:*",

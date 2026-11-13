@@ -13,7 +13,8 @@ export type IconName =
   | "clock"
   | "sprout"
   | "chart"
-  | "award";
+  | "award"
+  | "help";
 
 // Renders an icon from the shared sprite in <IconSprite />.
 export function Icon({
