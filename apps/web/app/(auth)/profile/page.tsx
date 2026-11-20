@@ -40,7 +40,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="w-full max-w-2xl">
-      <AccountNav active="profile" />
+      <AccountNav active="profile" isAdmin={user.isAdmin === true} />
 
       <section className="panel p-8">
         <div className="flex items-center gap-5">

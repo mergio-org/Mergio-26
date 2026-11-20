@@ -5,7 +5,8 @@ import type { IconName } from "@/components/landing/icon";
 export const links = {
   register: "/register",
   githubSignIn: "/register",
-  submitProject: "/register?role=maintainer",
+  // Asks people to register as a maintainer first if they haven't.
+  submitProject: "/projects/new",
   mentor: "/register?role=mentor",
   maintainerGuide: "#",
   sponsor: "#",

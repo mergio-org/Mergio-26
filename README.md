@@ -90,6 +90,39 @@ Sign-in is checked in two places. `apps/web/proxy.ts` only looks for a session c
 
 People pick any of **Contributor**, **Maintainer** and **Mentor** and can hold several. Each role is its own `Registration` row with a status. Contributors are `APPROVED` immediately. Maintainers and mentors start as `PENDING` until an admin reviews them. Shared details (college, graduation year, phone, Discord) live in one `Profile` per person.
 
+### Project applications
+
+Maintainers apply with a project at `/projects/new` (issue #23, F-04). An application is saved as a draft, then submitted for review. Saving looks each repo up on GitHub and stores its permanent repo id, so renamed or transferred repos keep working. Submitting runs every check again and only succeeds when each repo is public, not archived, has an OSI-approved license, a README and a CONTRIBUTING file, and the applicant has admin or maintain permission on it.
+
+The checks use the applicant's own GitHub sign-in token (`read:user`, `user:email`), so no extra GitHub permissions are needed. If a repo belongs to an organization that restricts OAuth apps, an owner of that organization has to approve the Mergio OAuth app before the permission check can pass.
+
+Approved projects with at least one accepted repo are listed at `/projects`. Projects belong to a `Season`; the migration seeds Winter 2026 as the active one.
+
+Admins (`User.isAdmin`) review applications at `/admin/projects`. An application moves draft → submitted → under review → changes requested or approved or rejected; the project admin resubmits after changes are requested. Every change is recorded in `ProjectReview` (who, when, an internal note only organizers see, and the public reason shown to the project admin), and every status change emails the project admin. A project can't be approved without a repo.
+
+After approval the project admin can still edit the description and tech stack, add repos and remove them (`/projects/{slug}/manage`). A repo added after approval has to pass every check and then waits for an organizer, who accepts or rejects it on the review page ("Repo requests" in the queue). Removing a repo keeps its row (`removedAt`), so points already earned stay and only future scoring stops; the last accepted repo can't be removed. Each repo shows whether the Mergio GitHub App tracks it ("Tracking active" or "App not installed"); the GitHub App's installation webhooks (F-06) set that, and `GITHUB_APP_SLUG` adds an install link. Returning projects re-apply each season with "Copy to …" on `/projects/new`.
+
+### Projects API
+
+JSON endpoints under `/api/v1`, authenticated with the same session cookie as the site. Writes must send `Content-Type: application/json` (cross-site forms can't, which protects against CSRF). Errors look like `{"error": {"message", "fields"?, "repoProblems"?}}`. GitHub repo ids are strings.
+
+| Method and path | Who | What |
+| --- | --- | --- |
+| `GET /projects?tag=Rust` | anyone | Live projects of the active season |
+| `GET /projects/{slug}` | anyone (live), owner and organizers (any status) | One project |
+| `POST /projects` | maintainers | Create a draft; `techStack` and `repos` may be arrays |
+| `PATCH /projects/{id}` | owner | Change fields; only `description` and `techStack` once approved |
+| `POST /projects/{id}/submit` | owner | Re-check repos and submit for review |
+| `POST /projects/{id}/repos` | owner | Add a repo: `{"url": "https://github.com/owner/repo"}` |
+| `DELETE /projects/{id}/repos/{repoId}` | owner | Remove a repo |
+| `GET /projects/{id}/install-status` | anyone (live), owner and organizers | GitHub App tracking per repo |
+| `GET /admin/projects/{id}/review` | organizers | Application, history and allowed decisions |
+| `POST /admin/projects/{id}/review` | organizers | `{"decision", "seenStatus"?, "publicReason"?, "internalNote"?}` |
+
+### Email
+
+Emails are written to the `EmailOutbox` table in the same transaction as the change they report, then sent through [Resend](https://resend.com) right after the response. Set `RESEND_API_KEY` and `EMAIL_FROM` (a sender on a domain verified in Resend) in `apps/web/.env`. Without a key, emails are only queued and logged; rows that are still `PENDING` (no key yet, or a failed attempt) can be sent later, and a retry worker arrives with notifications (F-13).
+
 ### Exporting leads
 
 Until the admin dashboard exists, dump every registration to CSV:

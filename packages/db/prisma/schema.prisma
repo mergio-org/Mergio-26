@@ -42,6 +42,9 @@ model User {
   accounts      Account[]
   profile       Profile?
   registrations Registration[]
+  projects      Project[]
+  reviews       ProjectReview[]
+  emails        EmailOutbox[]
 }
 
 model Session {
@@ -97,16 +100,16 @@ model Verification {
 
 // One per user: details shared across every role they sign up for.
 model Profile {
-  id                      String    @id @default(cuid())
-  userId                  String    @unique
+  id                      String   @id @default(cuid())
+  userId                  String   @unique
   college                 String
   graduationYear          Int
   phone                   String?
   discord                 String?
   codeOfConductAcceptedAt DateTime
-  updatesOptIn            Boolean   @default(false)
-  createdAt               DateTime  @default(now())
-  updatedAt               DateTime  @updatedAt
+  updatesOptIn            Boolean  @default(false)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -129,4 +132,174 @@ model Registration {
 
   @@unique([userId, role])
   @@index([role, status])
+}
+
+// ---------------------------------------------------------------------------
+// Seasons (F-03). Only what projects need today: F-03 adds dates, scoring rules
+// and toggles. Exactly one season is active; that is enforced in code
+// (activeSeason() in apps/web/lib/projects-server.ts), not by the database.
+// ---------------------------------------------------------------------------
+
+model Season {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[]
+}
+
+// ---------------------------------------------------------------------------
+// Projects (F-04). A project admin (a user with the MAINTAINER role) applies with
+// 1 to 10 GitHub repos; organizers review the application.
+// ---------------------------------------------------------------------------
+
+enum ProjectStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+}
+
+// Whether organizers have accepted a repo. Repos in the application are accepted
+// together with the project; repos added after approval wait for an organizer
+// (anti-abuse, PRD section 10).
+enum RepoApproval {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Whether the GitHub App is installed on the repo (set by F-06's installation
+// webhooks). Scoring only runs for ACTIVE repos.
+enum RepoTrackingStatus {
+  NOT_INSTALLED
+  ACTIVE
+  SUSPENDED
+}
+
+model Project {
+  id               String        @id @default(cuid())
+  seasonId         String
+  ownerId          String
+  // Unique within a season, so a returning project can keep its slug next season.
+  slug             String
+  name             String
+  // Markdown, rendered without raw HTML.
+  description      String
+  techStack        String[]
+  // Expected share of issues per level, in percent. The three add up to 100.
+  difficultyEasy   Int
+  difficultyMedium Int
+  difficultyHard   Int
+  // Optional override; otherwise the first repo owner's GitHub avatar is shown.
+  logoUrl          String?
+  discordChannel   String?
+  contributingUrl  String?
+  expectedMentors  Int           @default(0)
+  // SPDX identifier, e.g. "MIT".
+  license          String
+  status           ProjectStatus @default(DRAFT)
+  // The latest reason shown to the project admin (changes requested, rejected).
+  publicReason     String?
+  // The project this application was copied from (a previous season's).
+  copiedFromId     String?
+  submittedAt      DateTime?
+  approvedAt       DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  season     Season          @relation(fields: [seasonId], references: [id])
+  owner      User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  copiedFrom Project?        @relation("ProjectCopies", fields: [copiedFromId], references: [id], onDelete: SetNull)
+  copies     Project[]       @relation("ProjectCopies")
+  repos      ProjectRepo[]
+  reviews    ProjectReview[]
+
+  @@unique([seasonId, slug])
+  @@index([seasonId, status])
+  @@index([ownerId])
+}
+
+model ProjectRepo {
+  id             String             @id @default(cuid())
+  projectId      String
+  // GitHub's numeric repo id never changes, even when a repo is renamed or
+  // transferred; owner and name are refreshed from GitHub.
+  githubRepoId   BigInt
+  owner          String
+  name           String
+  approval       RepoApproval       @default(PENDING)
+  trackingStatus RepoTrackingStatus @default(NOT_INSTALLED)
+  // The last GitHub validation: which checks passed (see lib/github.ts in apps/web).
+  validation     Json?
+  validatedAt    DateTime?
+  // Removing a repo stops future scoring but keeps the row (and its earned points).
+  removedAt      DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, githubRepoId])
+  @@index([githubRepoId])
+}
+
+// One row per status change or reviewer note on a project: the review history and its audit
+// trail. The project admin's own submissions are recorded too (actor = the PA).
+model ProjectReview {
+  id           String         @id @default(cuid())
+  projectId    String
+  // Null once the acting user's account is deleted; the history itself is kept.
+  actorId      String?
+  // Both set for a status change; both null for a note on its own.
+  fromStatus   ProjectStatus?
+  toStatus     ProjectStatus?
+  // Seen by organizers only.
+  internalNote String?
+  // Shown to the project admin (and emailed to them).
+  publicReason String?
+  createdAt    DateTime       @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Email. Every transactional email is written here first, in the same
+// transaction as the change it reports, then delivered (lib/email.ts in
+// apps/web). Rows still PENDING can be retried; F-13 adds the retry worker.
+// ---------------------------------------------------------------------------
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model EmailOutbox {
+  id        String      @id @default(cuid())
+  toEmail   String
+  toUserId  String?
+  // What the email is about, e.g. "project-status", so F-13 can honour per-category mutes.
+  category  String
+  subject   String
+  text      String
+  html      String
+  status    EmailStatus @default(PENDING)
+  attempts  Int         @default(0)
+  lastError String?
+  sentAt    DateTime?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  toUser User? @relation(fields: [toUserId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
 }

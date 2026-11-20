@@ -30,7 +30,10 @@
         "GITHUB_CLIENT_ID",
         "GITHUB_CLIENT_SECRET",
         "ADMIN_GITHUB_LOGINS",
-        "AUTH_COOKIE_DOMAIN"
+        "AUTH_COOKIE_DOMAIN",
+        "RESEND_API_KEY",
+        "EMAIL_FROM",
+        "GITHUB_APP_SLUG"
       ]
     },
     "lint": {

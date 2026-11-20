@@ -744,6 +744,24 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 .auth-page > .wrap { width: 100%; }
 .auth-top { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; padding-bottom: 20px; }
 .auth-main { flex: 1; display: flex; justify-content: center; align-items: center; padding-top: 24px; padding-bottom: 220px; }
+/* list and detail pages (/projects) use the full content width and start at the top */
+.auth-main-wide { align-items: flex-start; }
+
+/* applicant-written markdown (project descriptions) */
+.md { color: var(--text); font-size: 16px; line-height: 1.7; overflow-wrap: anywhere; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md h1, .md h2, .md h3, .md h4 { margin: 1.6em 0 .5em; line-height: 1.25; letter-spacing: -.015em; font-weight: 600; }
+.md h1 { font-size: 26px; } .md h2 { font-size: 22px; } .md h3 { font-size: 18px; } .md h4 { font-size: 16px; }
+.md p, .md ul, .md ol, .md blockquote, .md pre { margin: 0 0 1em; }
+.md ul, .md ol { padding-left: 1.4em; }
+.md li + li { margin-top: .3em; }
+.md a { color: var(--ice); text-decoration: underline; text-underline-offset: 3px; }
+.md code { font: .9em var(--mono); padding: .1em .35em; border-radius: 5px; background: var(--surface-2); }
+.md pre { overflow-x: auto; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); }
+.md pre code { padding: 0; background: none; }
+.md blockquote { padding-left: 14px; border-left: 3px solid var(--border-strong); color: var(--muted); }
+.md hr { border: 0; border-top: 1px solid var(--border); margin: 1.6em 0; }
 .auth-card { width: 100%; max-width: 640px; padding: 36px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
 .auth-card h1 { font-size: clamp(28px, 4vw, 38px); line-height: 1.12; letter-spacing: -.03em; font-weight: 600; }
 .auth-lead { color: var(--muted); font-size: 17px; }
@@ -806,6 +824,8 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 .field .opt { font-weight: 400; color: var(--dim); font-size: 13px; margin-left: 4px; }
 .field input, .field select { width: 100%; min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--text); font: 400 16px var(--sans); }
 .field input:focus-visible, .field select:focus-visible { outline: 2px solid var(--ice); outline-offset: 1px; }
+.field textarea { width: 100%; min-height: 88px; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--text); font: 400 16px/1.5 var(--sans); resize: vertical; }
+.field textarea:focus-visible { outline: 2px solid var(--ice); outline-offset: 1px; }
 .field [aria-invalid="true"] { border-color: #E5484D; }
 .field-error, .form-alert { color: #E5484D; font-size: 14px; margin-top: 6px; }
 .form-alert { margin: 0; padding: 10px 14px; border: 1px solid currentColor; border-radius: 10px; }
