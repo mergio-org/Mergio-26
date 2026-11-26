@@ -1,2 +1,205 @@
 @import "tailwindcss";
 @import "@repo/tailwind-config";
+
+:root {
+  --bg: #0B0D12;
+  --surface: #10131A;
+  --surface-2: #151922;
+  --surface-3: #1B212D;
+  --border: #232835;
+  --border-strong: #2F3546;
+  --text: #EDF0F5;
+  --muted: #A3AAB8;
+  --dim: #7F8797;
+  --ice: #8CCBFF;
+  --ice-soft: rgba(140, 203, 255, 0.12);
+  --green: #5BD49A;
+  --red: #FF6B6B;
+  --amber: #FFC069;
+  --sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Frosted Glass Panels */
+  --panel-bg: linear-gradient(180deg, rgba(16, 19, 26, 0.85), rgba(11, 13, 18, 0.92));
+  --panel-border: rgba(180, 205, 255, 0.09);
+  --panel-border-strong: rgba(180, 205, 255, 0.18);
+  --panel-highlight: rgba(220, 235, 255, 0.06);
+  --panel-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.8);
+  --panel-glow: rgba(140, 203, 255, 0.08);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #F4F8FC;
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-2: #EEF3F9;
+  --surface-3: #E1EAF4;
+  --border: #DCE4EE;
+  --border-strong: #C6D2E0;
+  --text: #0E1726;
+  --muted: #465366;
+  --dim: #5D6A7C;
+  --ice: #1F6FD1;
+  --ice-soft: rgba(31, 111, 209, 0.10);
+  --green: #1A8F57;
+  --red: #D9383A;
+  --amber: #D48806;
+
+  --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  --panel-border: rgba(31, 111, 209, 0.14);
+  --panel-border-strong: rgba(31, 111, 209, 0.28);
+  --panel-highlight: rgba(255, 255, 255, 0.9);
+  --panel-shadow: 0 16px 36px -12px rgba(30, 60, 110, 0.12);
+  --panel-glow: rgba(31, 111, 209, 0.05);
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Background Subtle Aurora */
+.admin-shell {
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+.admin-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: radial-gradient(70% 35% at 50% 0%, rgba(120, 170, 255, 0.08), transparent 70%),
+              linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%);
+}
+
+[data-theme="light"] .admin-shell::before {
+  background: radial-gradient(60% 35% at 60% 0%, rgba(200, 225, 255, 0.5), transparent 70%),
+              linear-gradient(180deg, #F4F8FC 0%, #EDF4FB 100%);
+}
+
+/* Frosted glass cards */
+.panel {
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: var(--panel-bg);
+  box-shadow: inset 0 1px 0 var(--panel-highlight), var(--panel-shadow);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.panel:hover {
+  border-color: var(--panel-border-strong);
+}
+
+.panel-featured {
+  border-color: var(--panel-border-strong);
+  background: radial-gradient(100% 60% at 50% 0%, var(--panel-glow), transparent 70%), var(--panel-bg);
+}
+
+/* Buttons */
+.btn-ice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--ice);
+  color: #0B0D12;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.btn-ice:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-3);
+  border-color: var(--ice);
+}
+
+/* Theme toggle button */
+.theme-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  transition: background 0.2s, transform 0.3s;
+}
+
+.theme-btn:hover {
+  background: var(--surface-3);
+  transform: rotate(15deg);
+}
+
+.theme-btn .i-sun { display: none; }
+[data-theme="light"] .theme-btn .i-sun { display: block; }
+[data-theme="light"] .theme-btn .i-moon { display: none; }
+
+/* Tables */
+table th {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* Badges */
+.badge-ice {
+  background: var(--ice-soft);
+  color: var(--ice);
+  border: 1px solid rgba(140, 203, 255, 0.25);
+}
+
+[data-theme="light"] .badge-ice {
+  border-color: rgba(31, 111, 209, 0.25);
+}
+
+/* Smooth transition when switching themes */
+html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease !important;
+}

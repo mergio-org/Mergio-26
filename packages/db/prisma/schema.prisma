@@ -71,6 +71,7 @@ model User {
   flagsRaised    Flag[]             @relation("FlagReporter")
   flagsReceived  Flag[]             @relation("FlagTarget")
   collegeAliases CollegeAlias[]
+  auditLogsActed AuditLog[]         @relation("AuditActor")
 }
 
 model Session {
@@ -268,6 +269,9 @@ model Season {
   mentorPoints         MentorPointEvent[]
   flags                Flag[]
   leaderboardSnapshots LeaderboardSnapshot[]
+
+  events     Event[]
+  changeLogs SeasonChangeLog[]
 }
 
 // ---------------------------------------------------------------------------
@@ -441,15 +445,28 @@ model EmailOutbox {
 
 // Every webhook GitHub sends. The delivery id is the key, so redeliveries are ignored.
 model WebhookDelivery {
-  id             String   @id
-  event          String
-  action         String?
-  githubRepoId   BigInt?
-  installationId BigInt?
-  payload        Json
-  receivedAt     DateTime @default(now())
+  id                String               @id
+  event             String
+  action            String?
+  githubRepoId      BigInt?
+  installationId    BigInt?
+  payload           Json
+  receivedAt        DateTime             @default(now())
+
+  // Webhook monitoring & replay fields
+  installationRefId String?
+  status            Int?
+  success           Boolean              @default(true)
+  responseBody      String?
+  durationMs        Int?
+  deliveredAt       DateTime             @default(now())
+
+  installation      WebhookInstallation? @relation(fields: [installationRefId], references: [id], onDelete: Cascade)
 
   @@index([receivedAt])
+  @@index([installationRefId, deliveredAt])
+  @@index([event])
+  @@index([success])
 }
 
 enum SyncJobKind {
@@ -894,3 +911,97 @@ model LeaderboardSnapshotEntry {
   @@id([snapshotId, board, entityId])
   @@index([snapshotId, board, rank])
 }
+
+// ---------------------------------------------------------------------------
+// Audit Log — every admin write is recorded here with actor, table, record,
+// and a JSON snapshot of the before/after values.
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  // The admin who performed the action.
+  actorId    String
+  // Human-readable action name, e.g. "APPROVE_REGISTRATION", "BAN_USER", "ADJUST_SCORE".
+  action     String
+  // The Prisma model/table this action touched, e.g. "Registration", "User", "Score".
+  entity     String
+  // The primary key of the affected row.
+  entityId   String
+  // Full snapshots so the log is self-contained even if the row changes later.
+  before     Json?
+  after      Json?
+  // Optional free-text note (required for certain actions like score adjustments).
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  actor User @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// A Season contains one or more Events (e.g., "Week 1 Sprint", "Finals").
+// Each event has its own timeline and can override the season-level config.
+// ---------------------------------------------------------------------------
+
+model Event {
+  id          String    @id @default(cuid())
+  seasonId    String
+  name        String    // e.g. "Week 1 Sprint"
+  slug        String    // URL-safe, unique within a season
+  description String?
+  startsAt    DateTime
+  endsAt      DateTime
+  isActive    Boolean   @default(false)
+  // Per-event config overrides (scoring multipliers, labels, etc.)
+  config      Json      @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  season  Season  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, slug])
+  @@index([seasonId])
+}
+
+// Every time an admin edits a Season row, a SeasonChangeLog entry is written
+// with the before/after values, mirroring AuditLog but kept separate so the
+// Season history page can be rendered without scanning the full audit log.
+model SeasonChangeLog {
+  id        String   @id @default(cuid())
+  seasonId  String
+  actorId   String
+  // Which field(s) changed, e.g. "config.scoringRules".
+  field     String
+  before    Json?
+  after     Json?
+  createdAt DateTime @default(now())
+
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@index([seasonId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Webhook — tracks GitHub App installations and their delivery history.
+// ---------------------------------------------------------------------------
+
+model WebhookInstallation {
+  id              String    @id @default(cuid())
+  // GitHub's own installation id (numeric, stored as string to avoid bigint issues).
+  githubId        String    @unique
+  // The GitHub account (org or user) that installed the app.
+  accountLogin    String
+  accountType     String    // "Organization" | "User"
+  // Repository full names covered by this installation (may be a subset).
+  repoFullNames   String[]  @default([])
+  // Whether the installation is currently active.
+  isActive        Boolean   @default(true)
+  installedAt     DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  deliveries WebhookDelivery[]
+}
+
