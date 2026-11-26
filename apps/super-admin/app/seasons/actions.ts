@@ -36,22 +36,31 @@ export async function createSeason(formData: FormData) {
 
   const { name, startsAt, endsAt, isActive, config } = parsed.data;
 
-  let parsedConfig: object = {};
+  let parsedRules: object = {};
   try {
-    if (config) parsedConfig = JSON.parse(config);
+    if (config) parsedRules = JSON.parse(config);
   } catch {
     return { error: { config: ["Invalid JSON"] } };
   }
 
-  const season = await prisma.season.create({
-    data: {
-      name,
-      slug: toSlug(name),
-      startsAt: new Date(startsAt),
-      endsAt: new Date(endsAt),
-      isActive: isActive ?? false,
-      config: parsedConfig,
-    },
+  const season = await prisma.$transaction(async (tx) => {
+    if (isActive) {
+      await tx.season.updateMany({
+        where: { isActive: true },
+        data: { isActive: false },
+      });
+    }
+
+    return tx.season.create({
+      data: {
+        name,
+        slug: toSlug(name),
+        codingStartsAt: new Date(startsAt),
+        codingEndsAt: new Date(endsAt),
+        isActive: isActive ?? false,
+        scoringRules: parsedRules,
+      },
+    });
   });
 
   await writeAuditLog({
@@ -60,7 +69,7 @@ export async function createSeason(formData: FormData) {
     entity: "Season",
     entityId: season.id,
     before: null,
-    after: { name, slug: season.slug, startsAt, endsAt, isActive },
+    after: { name, slug: season.slug, codingStartsAt: startsAt, codingEndsAt: endsAt, isActive },
   });
 
   redirect(`/seasons`);
@@ -79,26 +88,37 @@ export async function updateSeason(seasonId: string, formData: FormData) {
 
   const before = await prisma.season.findUniqueOrThrow({ where: { id: seasonId } });
 
-  let parsedConfig: object = {};
+  let parsedRules: object = {};
   try {
-    if (parsed.data.config) parsedConfig = JSON.parse(parsed.data.config);
+    if (parsed.data.config) parsedRules = JSON.parse(parsed.data.config);
   } catch {
     return { error: { config: ["Invalid JSON"] } };
   }
 
-  const after = await prisma.season.update({
-    where: { id: seasonId },
-    data: {
-      name: parsed.data.name,
-      startsAt: new Date(parsed.data.startsAt),
-      endsAt: new Date(parsed.data.endsAt),
-      isActive: parsed.data.isActive ?? false,
-      config: parsedConfig,
-    },
+  const isActive = parsed.data.isActive ?? false;
+
+  const after = await prisma.$transaction(async (tx) => {
+    if (isActive) {
+      await tx.season.updateMany({
+        where: { isActive: true, id: { not: seasonId } },
+        data: { isActive: false },
+      });
+    }
+
+    return tx.season.update({
+      where: { id: seasonId },
+      data: {
+        name: parsed.data.name,
+        codingStartsAt: new Date(parsed.data.startsAt),
+        codingEndsAt: new Date(parsed.data.endsAt),
+        isActive,
+        scoringRules: parsedRules,
+      },
+    });
   });
 
   // Write a SeasonChangeLog entry for each changed field.
-  const fields: (keyof typeof before)[] = ["name", "startsAt", "endsAt", "isActive", "config"];
+  const fields: (keyof typeof before)[] = ["name", "codingStartsAt", "codingEndsAt", "isActive", "scoringRules"];
   for (const field of fields) {
     const bVal = JSON.stringify(before[field]);
     const aVal = JSON.stringify(after[field]);
@@ -120,8 +140,8 @@ export async function updateSeason(seasonId: string, formData: FormData) {
     action: "UPDATE_SEASON",
     entity: "Season",
     entityId: seasonId,
-    before: { name: before.name, startsAt: before.startsAt, endsAt: before.endsAt, isActive: before.isActive },
-    after: { name: after.name, startsAt: after.startsAt, endsAt: after.endsAt, isActive: after.isActive },
+    before: { name: before.name, codingStartsAt: before.codingStartsAt, codingEndsAt: before.codingEndsAt, isActive: before.isActive },
+    after: { name: after.name, codingStartsAt: after.codingStartsAt, codingEndsAt: after.codingEndsAt, isActive: after.isActive },
   });
 
   revalidatePath("/seasons");

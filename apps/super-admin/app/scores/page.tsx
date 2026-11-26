@@ -16,7 +16,7 @@ export default async function ScoresPage({ searchParams }: Props) {
 
   const [seasons, users, recentScores] = await Promise.all([
     prisma.season.findMany({
-      orderBy: { startsAt: "desc" },
+      orderBy: { createdAt: "desc" },
       include: {
         events: { select: { id: true, name: true } },
       },
@@ -26,14 +26,14 @@ export default async function ScoresPage({ searchParams }: Props) {
       orderBy: { name: "asc" },
       take: 200,
     }),
-    prisma.score.findMany({
+    prisma.scoreEvent.findMany({
       where: seasonId ? { seasonId } : undefined,
       orderBy: { createdAt: "desc" },
       take: 50,
       include: {
         user: { select: { id: true, name: true, githubLogin: true } },
         season: { select: { name: true } },
-        event: { select: { name: true } },
+        pullRequest: { select: { number: true, title: true } },
       },
     }),
   ]);
@@ -42,11 +42,11 @@ export default async function ScoresPage({ searchParams }: Props) {
   const currentSeasonFilter = seasonId || activeSeason?.id;
 
   // Aggregate user points for current selected season
-  const userTotals = await prisma.score.groupBy({
+  const userTotals = await prisma.scoreEvent.groupBy({
     by: ["userId"],
     where: currentSeasonFilter ? { seasonId: currentSeasonFilter } : undefined,
-    _sum: { delta: true },
-    orderBy: { _sum: { delta: "desc" } },
+    _sum: { points: true },
+    orderBy: { _sum: { points: "desc" } },
     take: 10,
   });
 
@@ -126,10 +126,10 @@ export default async function ScoresPage({ searchParams }: Props) {
                   <thead className="border-b" style={{ borderColor: "var(--border)" }}>
                     <tr>
                       <th className="px-5 py-3">User</th>
-                      <th className="px-5 py-3">Delta</th>
-                      <th className="px-5 py-3">Source</th>
+                      <th className="px-5 py-3">Points</th>
+                      <th className="px-5 py-3">Kind</th>
                       <th className="px-5 py-3">Details / PR</th>
-                      <th className="px-5 py-3">Reason</th>
+                      <th className="px-5 py-3">Description</th>
                       <th className="px-5 py-3">Date</th>
                     </tr>
                   </thead>
@@ -154,10 +154,10 @@ export default async function ScoresPage({ searchParams }: Props) {
                         <td
                           className="px-5 py-3 font-mono font-bold"
                           style={{
-                            color: s.delta > 0 ? "var(--green)" : "var(--red)",
+                            color: s.points > 0 ? "var(--green)" : "var(--red)",
                           }}
                         >
-                          {s.delta > 0 ? `+${s.delta}` : s.delta}
+                          {s.points > 0 ? `+${s.points}` : s.points}
                         </td>
 
                         <td className="px-5 py-3">
@@ -165,31 +165,31 @@ export default async function ScoresPage({ searchParams }: Props) {
                             className="rounded px-1.5 py-0.5 text-[10px] font-semibold"
                             style={{
                               backgroundColor:
-                                s.source === "MANUAL"
+                                s.kind === "ADJUSTMENT"
                                   ? "rgba(255, 192, 105, 0.15)"
                                   : "var(--ice-soft)",
                               color:
-                                s.source === "MANUAL"
+                                s.kind === "ADJUSTMENT"
                                   ? "var(--amber)"
                                   : "var(--ice)",
                             }}
                           >
-                            {s.source}
+                            {s.kind}
                           </span>
                         </td>
 
                         <td className="px-5 py-3" style={{ color: "var(--muted)" }}>
-                          {s.prNumber ? (
+                          {s.pullRequest ? (
                             <span>
-                              PR #{s.prNumber} {s.repoFullName && `(${s.repoFullName})`}
+                              PR #{s.pullRequest.number} ({s.pullRequest.title})
                             </span>
                           ) : (
-                            <span>{s.event?.name || s.season.name}</span>
+                            <span>{s.ruleKey}</span>
                           )}
                         </td>
 
                         <td className="max-w-[180px] truncate px-5 py-3" style={{ color: "var(--muted)" }}>
-                          {s.reason || "—"}
+                          {s.description || "—"}
                         </td>
 
                         <td className="px-5 py-3 whitespace-nowrap" style={{ color: "var(--dim)" }}>
@@ -248,7 +248,7 @@ export default async function ScoresPage({ searchParams }: Props) {
                         </div>
                       </div>
                       <span className="font-mono font-bold" style={{ color: "var(--ice)" }}>
-                        {item._sum.delta ?? 0} pts
+                        {item._sum.points ?? 0} pts
                       </span>
                     </li>
                   );

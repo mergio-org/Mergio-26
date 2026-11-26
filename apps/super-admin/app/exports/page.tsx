@@ -13,7 +13,7 @@ export default async function ExportsPage({ searchParams }: Props) {
   const { seasonId } = await searchParams;
 
   const seasons = await prisma.season.findMany({
-    orderBy: { startsAt: "desc" },
+    orderBy: { createdAt: "desc" },
   });
 
   const activeSeason = seasons.find((s) => s.isActive) || seasons[0];

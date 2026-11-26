@@ -21,11 +21,11 @@ export default async function UserDetailPage({
     include: {
       profile: true,
       registrations: true,
-      scores: {
+      scoreEvents: {
         orderBy: { createdAt: "desc" },
         include: {
           season: { select: { name: true } },
-          event: { select: { name: true } },
+          pullRequest: { select: { number: true, title: true } },
         },
       },
     },
@@ -33,7 +33,7 @@ export default async function UserDetailPage({
 
   if (!user) notFound();
 
-  const totalScore = user.scores.reduce((sum, s) => sum + s.delta, 0);
+  const totalScore = user.scoreEvents.reduce((sum, s) => sum + s.points, 0);
   const existingRoles = user.registrations.map((r) => r.role);
 
   // Fetch audit logs affecting this user
@@ -237,7 +237,7 @@ export default async function UserDetailPage({
               </div>
             </div>
 
-            {user.scores.length === 0 ? (
+            {user.scoreEvents.length === 0 ? (
               <div className="py-12 text-center text-xs" style={{ color: "var(--dim)" }}>
                 No score events recorded yet for this participant.
               </div>
@@ -246,56 +246,56 @@ export default async function UserDetailPage({
                 <table className="w-full text-left text-xs">
                   <thead className="border-b" style={{ borderColor: "var(--border)" }}>
                     <tr>
-                      <th className="py-2.5">Delta</th>
-                      <th className="py-2.5">Source</th>
-                      <th className="py-2.5">PR / Repo</th>
-                      <th className="py-2.5">Season / Event</th>
-                      <th className="py-2.5">Reason</th>
+                      <th className="py-2.5">Points</th>
+                      <th className="py-2.5">Kind</th>
+                      <th className="py-2.5">PR / Rule</th>
+                      <th className="py-2.5">Season</th>
+                      <th className="py-2.5">Description</th>
                       <th className="py-2.5">Date</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y" style={{ borderColor: "var(--border)" }}>
-                    {user.scores.map((score) => (
+                    {user.scoreEvents.map((score) => (
                       <tr key={score.id}>
                         <td
                           className="py-3 font-mono font-bold"
                           style={{
-                            color: score.delta > 0 ? "var(--green)" : "var(--red)",
+                            color: score.points > 0 ? "var(--green)" : "var(--red)",
                           }}
                         >
-                          {score.delta > 0 ? `+${score.delta}` : score.delta}
+                          {score.points > 0 ? `+${score.points}` : score.points}
                         </td>
                         <td className="py-3">
                           <span
                             className="rounded px-1.5 py-0.5 text-[10px] font-semibold"
                             style={{
                               backgroundColor:
-                                score.source === "MANUAL"
+                                score.kind === "ADJUSTMENT"
                                   ? "rgba(255, 192, 105, 0.15)"
                                   : "var(--ice-soft)",
                               color:
-                                score.source === "MANUAL"
+                                score.kind === "ADJUSTMENT"
                                   ? "var(--amber)"
                                   : "var(--ice)",
                             }}
                           >
-                            {score.source}
+                            {score.kind}
                           </span>
                         </td>
                         <td className="py-3" style={{ color: "var(--text)" }}>
-                          {score.prNumber ? (
+                          {score.pullRequest ? (
                             <span>
-                              PR #{score.prNumber} {score.repoFullName && `(${score.repoFullName})`}
+                              PR #{score.pullRequest.number} ({score.pullRequest.title})
                             </span>
                           ) : (
-                            <span style={{ color: "var(--dim)" }}>—</span>
+                            <span style={{ color: "var(--dim)" }}>{score.ruleKey}</span>
                           )}
                         </td>
                         <td className="py-3" style={{ color: "var(--dim)" }}>
-                          {score.event?.name || score.season.name}
+                          {score.season.name}
                         </td>
                         <td className="max-w-[160px] truncate py-3" style={{ color: "var(--muted)" }}>
-                          {score.reason || "—"}
+                          {score.description || "—"}
                         </td>
                         <td className="py-3 whitespace-nowrap" style={{ color: "var(--dim)" }}>
                           {new Date(score.createdAt).toLocaleDateString()}

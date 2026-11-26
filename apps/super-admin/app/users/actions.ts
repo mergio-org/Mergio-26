@@ -22,12 +22,27 @@ export async function banUser(formData: FormData) {
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
   const { userId, reason } = parsed.data;
+
+  // Security: prevent banning oneself
+  if (admin.id === userId) {
+    return { error: { reason: ["You cannot ban your own account."] } };
+  }
+
   const before = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
 
-  const after = await prisma.user.update({
-    where: { id: userId },
-    data: { bannedAt: new Date(), banReason: reason },
-  });
+  // Security: super admins cannot be banned directly
+  if (before.isSuperAdmin || before.staffRole === "SUPER_ADMIN") {
+    return { error: { reason: ["Super admins cannot be banned. Demote their staff role first."] } };
+  }
+
+  // Ban user and delete active sessions in one transaction so they are instantly signed out
+  const [after, revoked] = await prisma.$transaction([
+    prisma.user.update({
+      where: { id: userId },
+      data: { bannedAt: new Date(), banReason: reason },
+    }),
+    prisma.session.deleteMany({ where: { userId } }),
+  ]);
 
   await writeAuditLog({
     actorId: admin.id,
@@ -35,7 +50,7 @@ export async function banUser(formData: FormData) {
     entity: "User",
     entityId: userId,
     before: { bannedAt: null, banReason: null },
-    after: { bannedAt: after.bannedAt, banReason: after.banReason },
+    after: { bannedAt: after.bannedAt, banReason: after.banReason, revokedSessions: revoked.count },
     reason,
   });
 

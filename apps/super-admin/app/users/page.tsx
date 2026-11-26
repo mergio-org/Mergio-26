@@ -29,7 +29,7 @@ export default async function UsersPage({ searchParams }: Props) {
     include: {
       profile: { select: { college: true, graduationYear: true } },
       registrations: { select: { role: true, status: true } },
-      _count: { select: { scores: true } },
+      _count: { select: { scoreEvents: true } },
     },
   });
 
@@ -175,7 +175,7 @@ export default async function UsersPage({ searchParams }: Props) {
                     </td>
 
                     <td className="px-5 py-3.5 font-mono font-medium" style={{ color: "var(--ice)" }}>
-                      {u._count.scores} event{u._count.scores !== 1 ? "s" : ""}
+                      {u._count.scoreEvents} event{u._count.scoreEvents !== 1 ? "s" : ""}
                     </td>
 
                     <td className="px-5 py-3.5">

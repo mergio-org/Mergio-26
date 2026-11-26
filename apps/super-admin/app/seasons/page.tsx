@@ -9,10 +9,10 @@ export default async function SeasonsPage() {
   await requireAdmin();
 
   const seasons = await prisma.season.findMany({
-    orderBy: { startsAt: "desc" },
+    orderBy: { createdAt: "desc" },
     include: {
       events: { orderBy: { startsAt: "asc" } },
-      _count: { select: { scores: true } },
+      _count: { select: { scoreEvents: true } },
     },
   });
 
@@ -70,10 +70,10 @@ export default async function SeasonsPage() {
                     )}
                   </div>
                   <p className="mt-1 text-xs" style={{ color: "var(--muted)" }}>
-                    {season.startsAt ? new Date(season.startsAt).toLocaleDateString() : "TBD"} —{" "}
-                    {season.endsAt ? new Date(season.endsAt).toLocaleDateString() : "TBD"} ·{" "}
+                    {season.codingStartsAt ? new Date(season.codingStartsAt).toLocaleDateString() : "TBD"} —{" "}
+                    {season.codingEndsAt ? new Date(season.codingEndsAt).toLocaleDateString() : "TBD"} ·{" "}
                     <span style={{ color: "var(--ice)" }}>
-                      {season._count.scores} score event{season._count.scores !== 1 ? "s" : ""}
+                      {season._count.scoreEvents} score event{season._count.scoreEvents !== 1 ? "s" : ""}
                     </span>
                   </p>
                 </div>

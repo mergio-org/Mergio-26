@@ -6,7 +6,12 @@ function toCsvRow(items: (string | number | boolean | null | undefined)[]): stri
   return items
     .map((item) => {
       if (item === null || item === undefined) return '""';
-      const str = String(item).replace(/"/g, '""');
+      let str = String(item).replace(/"/g, '""');
+      // Prevent CSV formula injection (OWASP):
+      // If cell starts with '=', '+', '-', '@', '\t', or '\r', prefix with single quote "'"
+      if (/^[=+\-@\t\r]/.test(str)) {
+        str = `'${str}`;
+      }
       return `"${str}"`;
     })
     .join(",");
@@ -68,41 +73,43 @@ export async function GET(
     csvContent = [toCsvRow(headers), ...rows.map(toCsvRow)].join("\n");
   } else if (type === "prs") {
     filename = `prs-${new Date().toISOString().split("T")[0]}.csv`;
-    const scores = await prisma.score.findMany({
+    const scoreEvents = await prisma.scoreEvent.findMany({
       where: {
-        prNumber: { not: null },
         seasonId,
       },
       include: {
         user: { select: { name: true, githubLogin: true, email: true } },
         season: { select: { name: true } },
+        pullRequest: { select: { number: true, title: true } },
       },
       orderBy: { createdAt: "desc" },
     });
 
     const headers = [
-      "Score ID",
+      "Event ID",
       "User Name",
       "User Email",
       "GitHub Login",
-      "Repository",
       "PR Number",
-      "Points Delta",
-      "Source",
-      "Reason",
+      "PR Title",
+      "Points",
+      "Kind",
+      "Rule Key",
+      "Description",
       "Season",
       "Created At",
     ];
-    const rows = scores.map((s) => [
+    const rows = scoreEvents.map((s) => [
       s.id,
       s.user.name,
       s.user.email,
       s.user.githubLogin,
-      s.repoFullName,
-      s.prNumber,
-      s.delta,
-      s.source,
-      s.reason,
+      s.pullRequest?.number ?? "",
+      s.pullRequest?.title ?? "",
+      s.points,
+      s.kind,
+      s.ruleKey,
+      s.description,
       s.season.name,
       s.createdAt.toISOString(),
     ]);
@@ -111,12 +118,12 @@ export async function GET(
   } else if (type === "leaderboard") {
     filename = `leaderboard-${new Date().toISOString().split("T")[0]}.csv`;
 
-    const userScores = await prisma.score.groupBy({
+    const userScores = await prisma.scoreEvent.groupBy({
       by: ["userId"],
       where: seasonId ? { seasonId } : undefined,
-      _sum: { delta: true },
-      _count: { prNumber: true },
-      orderBy: { _sum: { delta: "desc" } },
+      _sum: { points: true },
+      _count: { id: true },
+      orderBy: { _sum: { points: "desc" } },
     });
 
     const userIds = userScores.map((s) => s.userId);
@@ -135,7 +142,7 @@ export async function GET(
       "College",
       "Graduation Year",
       "Total Score",
-      "PRs Count",
+      "Score Events Count",
     ];
 
     const rows = userScores.map((s, index) => {
@@ -148,8 +155,8 @@ export async function GET(
         u?.githubLogin,
         u?.profile?.college,
         u?.profile?.graduationYear,
-        s._sum.delta ?? 0,
-        s._count.prNumber ?? 0,
+        s._sum.points ?? 0,
+        s._count.id ?? 0,
       ];
     });
 
@@ -164,7 +171,7 @@ export async function GET(
         user: {
           include: {
             profile: true,
-            scores: seasonId ? { where: { seasonId } } : true,
+            scoreEvents: seasonId ? { where: { seasonId } } : true,
           },
         },
       },
@@ -184,7 +191,7 @@ export async function GET(
     ];
 
     const rows = approvedRegistrations.map((reg) => {
-      const totalScore = reg.user.scores.reduce((acc, s) => acc + s.delta, 0);
+      const totalScore = reg.user.scoreEvents.reduce((acc: number, s: { points: number }) => acc + s.points, 0);
       const isEligible = !reg.user.bannedAt && (reg.role !== "CONTRIBUTOR" || totalScore > 0);
       return [
         reg.id,

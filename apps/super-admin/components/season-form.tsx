@@ -7,10 +7,10 @@ interface SeasonFormProps {
   action: (formData: FormData) => Promise<{ error?: Record<string, string[]> } | void>;
   defaultValues?: {
     name?: string;
-    startsAt?: Date | string | null;
-    endsAt?: Date | string | null;
+    codingStartsAt?: Date | string | null;
+    codingEndsAt?: Date | string | null;
     isActive?: boolean;
-    config?: unknown;
+    scoringRules?: unknown;
   };
 }
 
@@ -18,15 +18,15 @@ export function SeasonForm({ action, defaultValues }: SeasonFormProps) {
   const [pending, setPending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
-  const defaultStart = defaultValues?.startsAt
-    ? new Date(defaultValues.startsAt).toISOString().split("T")[0]
+  const defaultStart = defaultValues?.codingStartsAt
+    ? new Date(defaultValues.codingStartsAt).toISOString().split("T")[0]
     : "";
-  const defaultEnd = defaultValues?.endsAt
-    ? new Date(defaultValues.endsAt).toISOString().split("T")[0]
+  const defaultEnd = defaultValues?.codingEndsAt
+    ? new Date(defaultValues.codingEndsAt).toISOString().split("T")[0]
     : "";
-  const defaultConfigStr = defaultValues?.config
-    ? JSON.stringify(defaultValues.config, null, 2)
-    : "{\n  \"scoringRules\": {\n    \"easy\": 10,\n    \"medium\": 25,\n    \"hard\": 50\n  }\n}";
+  const defaultConfigStr = defaultValues?.scoringRules
+    ? JSON.stringify(defaultValues.scoringRules, null, 2)
+    : "{\n  \"levels\": {\n    \"BEGINNER\": 10,\n    \"INTERMEDIATE\": 25,\n    \"ADVANCED\": 50\n  }\n}";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

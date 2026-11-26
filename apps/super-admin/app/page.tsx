@@ -33,7 +33,7 @@ export default async function DashboardPage() {
       where: { role: "MENTOR", status: "PENDING" },
     }),
     prisma.user.count(),
-    prisma.score.count(),
+    prisma.scoreEvent.count(),
     prisma.auditLog.findMany({
       orderBy: { createdAt: "desc" },
       take: 6,
@@ -184,8 +184,8 @@ export default async function DashboardPage() {
                   {activeSeason.name}
                 </p>
                 <p className="mt-0.5 text-xs" style={{ color: "var(--muted)" }}>
-                  {activeSeason.startsAt ? new Date(activeSeason.startsAt).toLocaleDateString() : "TBD"} —{" "}
-                  {activeSeason.endsAt ? new Date(activeSeason.endsAt).toLocaleDateString() : "TBD"}
+                  {activeSeason.codingStartsAt ? new Date(activeSeason.codingStartsAt).toLocaleDateString() : "TBD"} —{" "}
+                  {activeSeason.codingEndsAt ? new Date(activeSeason.codingEndsAt).toLocaleDateString() : "TBD"}
                 </p>
               </div>
 

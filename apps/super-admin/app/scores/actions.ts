@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/db";
+import { enqueueJobs } from "@/lib/queue";
 import { requireAdmin } from "@/lib/dal";
 import { writeAuditLog } from "@/lib/audit";
 import { z } from "zod";
@@ -9,27 +10,17 @@ import { z } from "zod";
 const ManualScoreSchema = z.object({
   userId: z.string().min(1, "User is required"),
   seasonId: z.string().min(1, "Season is required"),
-  eventId: z.string().optional().nullable(),
   delta: z.coerce.number().int().refine((n) => n !== 0, "Delta cannot be 0"),
-  prNumber: z.coerce.number().int().optional().nullable(),
-  repoFullName: z.string().optional().nullable(),
   reason: z.string().min(5, "Mandatory reason must be at least 5 characters"),
 });
 
 export async function createManualScoreAdjustment(formData: FormData) {
   const admin = await requireAdmin();
 
-  const rawEventId = formData.get("eventId") as string;
-  const rawPrNumber = formData.get("prNumber") as string;
-  const rawRepo = formData.get("repoFullName") as string;
-
   const parsed = ManualScoreSchema.safeParse({
     userId: formData.get("userId"),
     seasonId: formData.get("seasonId"),
-    eventId: rawEventId ? rawEventId : null,
     delta: formData.get("delta"),
-    prNumber: rawPrNumber ? parseInt(rawPrNumber, 10) : null,
-    repoFullName: rawRepo ? rawRepo.trim() : null,
     reason: formData.get("reason"),
   });
 
@@ -37,39 +28,45 @@ export async function createManualScoreAdjustment(formData: FormData) {
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const { userId, seasonId, eventId, delta, prNumber, repoFullName, reason } = parsed.data;
+  const { userId, seasonId, delta, reason } = parsed.data;
 
-  // Create Score record
-  const score = await prisma.score.create({
+  const idempotencyKey = `manual:${userId}:${seasonId}:${Date.now()}`;
+
+  // Create ScoreEvent record in the official scoring ledger
+  const scoreEvent = await prisma.scoreEvent.create({
     data: {
       userId,
       seasonId,
-      eventId: eventId || null,
-      source: "MANUAL",
-      delta,
-      prNumber: prNumber || null,
-      repoFullName: repoFullName || null,
-      reason,
-      actorId: admin.id,
+      kind: "ADJUSTMENT",
+      ruleKey: "manual:adjustment",
+      points: delta,
+      description: reason,
+      effectiveAt: new Date(),
+      idempotencyKey,
     },
   });
+
+  // Enqueue live leaderboard refresh and user rescore so scores update immediately
+  await enqueueJobs([
+    { kind: "LEADERBOARD_REFRESH", payload: { seasonId, kind: "user", id: userId } },
+    { kind: "USER_RESCORE", payload: { userId } },
+  ]);
 
   // Acceptance: every admin write is in the audit log with actor, before and after values
   await writeAuditLog({
     actorId: admin.id,
     action: "MANUAL_SCORE_ADJUSTMENT",
-    entity: "Score",
-    entityId: score.id,
+    entity: "ScoreEvent",
+    entityId: scoreEvent.id,
     before: null,
     after: {
-      id: score.id,
-      userId: score.userId,
-      seasonId: score.seasonId,
-      eventId: score.eventId,
-      delta: score.delta,
-      source: score.source,
-      reason: score.reason,
-      actorId: score.actorId,
+      id: scoreEvent.id,
+      userId: scoreEvent.userId,
+      seasonId: scoreEvent.seasonId,
+      points: scoreEvent.points,
+      kind: scoreEvent.kind,
+      description: scoreEvent.description,
+      actorId: admin.id,
     },
     reason,
   });
