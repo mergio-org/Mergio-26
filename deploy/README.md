@@ -59,6 +59,12 @@ Migrations are applied before the new code starts, and Vercel deploys the web ap
 time, so a migration must also work with the code that's still running: add columns and tables
 first, and remove old ones in a later release.
 
+**Don't run `prisma migrate deploy` against production yourself.** Merging to main applies
+migrations, after a backup. A manual run at the same time as a deploy makes the deploy fail.
+The pipeline skips Prisma's advisory lock (`PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK`): through the
+Supabase session pooler that lock can stay held after the process ends and block the next
+deploy, and deploys are already serialized.
+
 ### One-time setup
 
 GitHub connects with its own SSH key, which can run only `mergio-deploy` (it accepts
