@@ -57,7 +57,12 @@ elif grep -q "have not yet been applied" <<<"$status"; then
   ls -1t "$backups"/pre-*.dump 2>/dev/null | tail -n +11 | xargs -r rm -f
 
   step "Applying migrations"
-  docker compose run --rm migrate migrate deploy 2>&1 |
+  # Prisma normally takes a Postgres advisory lock (pg_advisory_lock) first. Through the
+  # Supabase session pooler that lock can outlive the process that took it, because the pooler
+  # keeps the server connection open, and the next deploy then times out with P1002. Deploys
+  # already run one at a time (mergio-deploy's flock and the workflow's concurrency group), so
+  # the lock adds nothing here. Nobody should run `migrate deploy` against production by hand.
+  docker compose run --rm -e PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK=1 migrate migrate deploy 2>&1 |
     { grep -vE 'Datasource|schema loaded|config file' || true; }
 else
   echo "Could not read the migration status (is the database reachable?). Nothing was changed." >&2
