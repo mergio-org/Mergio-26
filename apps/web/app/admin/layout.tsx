@@ -33,6 +33,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             Leaderboard
           </Link>
           <Link
+            href="/admin/content"
+            className="rounded-full px-3 py-1.5 text-(color:--muted) transition-colors hover:text-(color:--text)"
+          >
+            Content
+          </Link>
+          <Link
             href="/admin/users"
             className="rounded-full px-3 py-1.5 text-(color:--muted) transition-colors hover:text-(color:--text)"
           >

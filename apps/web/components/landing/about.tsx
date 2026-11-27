@@ -1,10 +1,11 @@
 import { about, accountLink, type Viewer } from "@/lib/content";
+import type { StatData } from "@/lib/site-content";
 import { SnowLedge } from "./art/snow-ledge";
 import { Icon } from "./icon";
 import { SectionHead } from "./section-head";
 
 // One frosted card with the key numbers and the ways to join.
-export function About({ viewer }: { viewer: Viewer }) {
+export function About({ viewer, stats }: { viewer: Viewer; stats: StatData[] }) {
   const account = accountLink(viewer);
   return (
     <section className="section" id="about">
@@ -22,8 +23,8 @@ export function About({ viewer }: { viewer: Viewer }) {
         <div className="about-card panel reveal">
           <SnowLedge id="about" />
           <ul className="about-stats">
-            {about.stats.map((stat) => (
-              <li key={stat.value}>
+            {stats.map((stat, i) => (
+              <li key={`${i}-${stat.value}`}>
                 <Icon name={stat.icon} size={22} />
                 <b>{stat.value}</b>
                 <span>{stat.label}</span>

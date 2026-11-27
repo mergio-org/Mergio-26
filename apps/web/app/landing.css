@@ -534,6 +534,8 @@ details[open] .faq-num { color: var(--ice); }
 details[open] .faq-toggle { color: var(--on-ice); background: var(--ice); border-color: transparent; transform: rotate(180deg); }
 details[open] .faq-toggle::after { transform: rotate(0deg); }
 details p { padding: 0 0 20px 36px; color: var(--muted); font-size: 15px; }
+.faq-a p { margin: 0; } .faq-a p + p { margin-top: -8px; } .faq-a a { color: var(--ice); text-decoration: underline; text-underline-offset: 3px; }
+.faq-a ul, .faq-a ol { margin: 0; padding: 0 0 20px 56px; color: var(--muted); font-size: 15px; }
 /* Smooth open/close where ::details-content is supported; other browsers toggle instantly. */
 .faq-list details::details-content { block-size: 0; overflow: hidden; transition: block-size .3s ease, content-visibility .3s allow-discrete; }
 .faq-list details[open]::details-content { block-size: auto; }

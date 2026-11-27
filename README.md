@@ -171,6 +171,39 @@ JSON endpoints under `/api/v1` (authenticated with the session cookie; writes re
 - `DELETE /admin/users/{id}/sessions` — revoke all sessions for a user
 - `PUT /admin/users/{id}/staff-role` — set `staffRole` (`"ORGANIZER" | "SUPER_ADMIN" | null`)
 
+### Site content API (F-16)
+
+Organizers edit public-site content at `/admin/content`; the same operations are available as JSON under `/api/v1` (organizers only unless noted). Every write is live on the public site immediately — no deploy. Field definitions and validation live in `apps/web/lib/site-content.ts`. Until a kind has items, the site shows the built-in copy from `apps/web/lib/content.ts`.
+
+`{kind}` is one of:
+
+| kind | Fields (`*` required) | Shown on |
+|---|---|---|
+| `faq` | `question`\*, `answer`\* (markdown) | `/`, `/faq` |
+| `timeline` | `title`\*, `body`\*, `icon`\*, `when`, `active` (boolean) | `/` |
+| `sponsors` | `name`\*, `tier`\* (`platinum`/`gold`/`silver`/`community`), `logoUrl`, `url`, `blurb` | `/sponsors` |
+| `team` | `name`\*, `role`\*, `photoUrl`, `githubLogin`, `linkedinUrl` | `/team` |
+| `stats` | `value`\*, `label`\*, `icon`\* | `/` (About card) |
+
+`icon` is one of `flake github check merge pr repo issue mentor trophy calendar clock sprout chart award help`.
+
+- `GET /admin/content/{kind}` — `{items: [{id, kind, position, data, updatedAt}]}` in display order
+- `POST /admin/content/{kind}` — body: the fields; adds at the end. `201` with the item
+- `GET /admin/content/{kind}/{id}` — one item
+- `PATCH /admin/content/{kind}/{id}` — body: fields to change (others keep their value)
+- `DELETE /admin/content/{kind}/{id}` — `{deleted: true}`
+- `PUT /admin/content/{kind}/order` — `{"ids": [...]}` listing every item of the kind once, in the new order
+- `POST /admin/content/{kind}/import` — copies the built-in copy into the database so it can be edited (`409` if the kind already has items)
+- `GET /admin/content/pages` — `{pages: [{slug, title, description, body, updatedAt}]}`; `updatedAt` is `null` while a page shows its built-in copy
+- `GET /admin/content/pages/{slug}` / `PUT` `{title, description, body}` / `DELETE` (back to built-in copy) — `slug`: `about`, `code-of-conduct`, `privacy`, `terms`; `body` is markdown
+- `POST /admin/content/uploads` — `{"contentType": "image/png", "size": 12345}` (PNG/JPEG/WebP/GIF/AVIF/SVG, ≤ 5 MB) → `201 {uploadUrl, publicUrl, key, headers, expiresIn}`. `PUT` the file to `uploadUrl` with `headers` within `expiresIn` seconds, then store `publicUrl`. `503` until the `S3_*` env vars are set
+- `GET /admin/content/sponsor-inquiries` — latest 200 "Become a sponsor" submissions, newest first
+- `POST /sponsor-inquiries` — **public**. `{name, email, organization, message}` → `201 {id}`
+
+Validation errors are `400 {error: {message, fields: {field: message}}}`.
+
+**Image storage:** set `S3_ENDPOINT`, `S3_REGION` (`auto` for R2), `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` and `S3_PUBLIC_URL` (see `apps/web/.env.example`). The bucket must be publicly readable at `S3_PUBLIC_URL` and allow CORS `PUT` with a `Content-Type` header from the site's origin.
+
 Configure your GitHub OAuth credentials in `apps/web/.env` and `apps/super-admin/.env` (see [Authentication](#github-authentication) below).
 
 #### 3. Initialize the database

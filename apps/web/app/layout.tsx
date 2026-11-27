@@ -10,6 +10,7 @@ const description =
   "Mergio is a month-long winter open-source program by GDG on Campus KNIT Sultanpur. Open to everyone.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.BETTER_AUTH_URL || "https://mergio.in"),
   title,
   description,
   openGraph: { title, description, type: "website", siteName: "Mergio" },
