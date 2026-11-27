@@ -55,22 +55,24 @@ model User {
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
-  sessions       Session[]
-  accounts       Account[]
-  profile        Profile?
-  registrations  Registration[]
-  projects       Project[]
-  reviews        ProjectReview[]
-  emails         EmailOutbox[]
-  pullRequests   PullRequest[]
-  scoreEvents    ScoreEvent[]
-  badges         UserBadge[]
-  disputes       Dispute[]
-  mentorships    ProjectMentor[]
-  mentorPoints   MentorPointEvent[]
-  flagsRaised    Flag[]             @relation("FlagReporter")
-  flagsReceived  Flag[]             @relation("FlagTarget")
-  collegeAliases CollegeAlias[]
+  sessions           Session[]
+  accounts           Account[]
+  profile            Profile?
+  editedContentItems ContentItem[]      @relation("ContentItemEditor")
+  editedContentPages ContentPage[]      @relation("ContentPageEditor")
+  registrations      Registration[]
+  projects           Project[]
+  reviews            ProjectReview[]
+  emails             EmailOutbox[]
+  pullRequests       PullRequest[]
+  scoreEvents        ScoreEvent[]
+  badges             UserBadge[]
+  disputes           Dispute[]
+  mentorships        ProjectMentor[]
+  mentorPoints       MentorPointEvent[]
+  flagsRaised        Flag[]             @relation("FlagReporter")
+  flagsReceived      Flag[]             @relation("FlagTarget")
+  collegeAliases     CollegeAlias[]
 }
 
 model Session {
@@ -893,4 +895,56 @@ model LeaderboardSnapshotEntry {
 
   @@id([snapshotId, board, entityId])
   @@index([snapshotId, board, rank])
+}
+
+// ---------------------------------------------------------------------------
+// Public-site content (F-16). Organizers edit these from /admin/content; the public pages read
+// them on every request, so a change is live without a deploy. The shape of `data` for each
+// kind is defined (and validated) by apps/web/lib/site-content.ts.
+// ---------------------------------------------------------------------------
+
+enum ContentKind {
+  FAQ
+  TIMELINE
+  SPONSOR
+  TEAM
+  STAT
+}
+
+model ContentItem {
+  id          String      @id @default(cuid())
+  kind        ContentKind
+  // Display order within a kind, lowest first.
+  position    Int         @default(0)
+  data        Json
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  updatedById String?
+  updatedBy   User?       @relation("ContentItemEditor", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([kind, position])
+}
+
+// Long-form pages (/about, /code-of-conduct, /privacy, /terms), keyed by their path.
+model ContentPage {
+  slug        String   @id
+  title       String
+  description String   @default("")
+  // Markdown.
+  body        String
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+  updatedBy   User?    @relation("ContentPageEditor", fields: [updatedById], references: [id], onDelete: SetNull)
+}
+
+// "Become a sponsor" form submissions from /sponsors.
+model SponsorInquiry {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  organization String
+  message      String
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
 }

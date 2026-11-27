@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { timeline } from "@/lib/content";
+import type { TimelineData } from "@/lib/site-content";
 import { Icon } from "./icon";
 import { SectionHead } from "./section-head";
 
@@ -22,7 +22,7 @@ function SnowCap() {
 // Stages before the `active` one render as done. Cards cascade in when the list is revealed.
 // Dates: each card has a date pill showing `when` from content.ts, or "Date TBA" until it is set.
 // The "Dates to be announced soon" badge under the heading hides once every stage has a date.
-export function Timeline() {
+export function Timeline({ timeline }: { timeline: TimelineData[] }) {
   const current = timeline.findIndex((stage) => stage.active);
   const allDated = timeline.every((stage) => stage.when);
 
@@ -37,7 +37,7 @@ export function Timeline() {
           accent="runs."
           center
         >
-          Six stages, one winter.
+          {timeline.length === 6 ? "Six stages" : `${timeline.length} stages`}, one winter.
         </SectionHead>
         {!allDated && (
           <p className="tl-tba reveal">
@@ -55,7 +55,7 @@ export function Timeline() {
               i === current ? "active" : i < current ? "done" : "upcoming";
             return (
               <li
-                key={stage.title}
+                key={`${i}-${stage.title}`}
                 className={`tl-step ${state}`}
                 aria-current={state === "active" ? "step" : undefined}
                 style={{ "--i": i } as CSSProperties}

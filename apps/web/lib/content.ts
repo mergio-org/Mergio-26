@@ -1,4 +1,5 @@
-// All copy for the landing page. Values in [brackets] are placeholders until they are finalised.
+// All copy for the landing page. FAQ, timeline and the About stats are the built-in defaults:
+// organizers override them from /admin/content (see lib/site-content.ts). Values in [brackets] are placeholders until they are finalised.
 
 import type { IconName } from "@/components/landing/icon";
 
@@ -9,10 +10,10 @@ export const links = {
   leaderboard: "/leaderboard",
   mentor: "/register?role=mentor",
   maintainerGuide: "#",
-  sponsor: "#",
+  sponsor: "/sponsors#become",
   discord: "#",
-  rules: "#",
-  codeOfConduct: "#",
+  rules: "/code-of-conduct",
+  codeOfConduct: "/code-of-conduct",
   instagram: "#",
   linkedin: "#",
 };
@@ -332,8 +333,17 @@ export const footerColumns = [
       { label: "Discord", href: links.discord },
       { label: "Instagram", href: links.instagram },
       { label: "LinkedIn", href: links.linkedin },
-      { label: "Rules", href: links.rules },
       { label: "Code of conduct", href: links.codeOfConduct },
+    ],
+  },
+  {
+    title: "Mergio",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Sponsors", href: "/sponsors" },
+      { label: "Team", href: "/team" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
     ],
   },
 ];

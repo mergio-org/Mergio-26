@@ -1,11 +1,13 @@
-import { faqs, links } from "@/lib/content";
+import { links } from "@/lib/content";
+import type { FaqData } from "@/lib/site-content";
+import { ContentMarkdown } from "../site/content-markdown";
 import { SnowLedge } from "./art/snow-ledge";
 import { Icon } from "./icon";
 import { SectionHead } from "./section-head";
 
 // Native <details> handles open/close, so this stays a server component.
 // The open/close animation is CSS-only (::details-content) and falls back to an instant toggle.
-export function Faq() {
+export function Faq({ faqs }: { faqs: FaqData[] }) {
   return (
     <section className="section" id="faq">
       <div className="wrap faq">
@@ -31,7 +33,7 @@ export function Faq() {
           </div>
         </div>
         <div className="faq-list reveal">
-          {faqs.map(({ q, a }, i) => (
+          {faqs.map(({ question: q, answer: a }, i) => (
             <details key={q} className="faq-item">
               <summary>
                 <span className="faq-num">
@@ -40,7 +42,7 @@ export function Faq() {
                 <span className="faq-q">{q}</span>
                 <span className="faq-toggle" aria-hidden="true" />
               </summary>
-              <p>{a}</p>
+              <ContentMarkdown className="faq-a">{a}</ContentMarkdown>
             </details>
           ))}
         </div>
