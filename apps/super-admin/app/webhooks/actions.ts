@@ -97,22 +97,34 @@ export async function resyncRepo(installationId: string, repoFullName?: string) 
     where: { id: installationId },
   });
 
-  const targetRepo = repoFullName || installation?.repoFullNames[0];
-  const [owner, name] = targetRepo?.split("/") ?? [];
+  const allowedRepos = repoFullName ? [repoFullName] : (installation?.repoFullNames ?? []);
+  if (allowedRepos.length === 0) {
+    return { success: true, message: "No repositories associated with this installation to resync." };
+  }
 
-  const repos = await prisma.projectRepo.findMany({
-    where: {
-      removedAt: null,
-      ...(owner && name
-        ? {
-            owner: { equals: owner, mode: "insensitive" },
-            name: { equals: name, mode: "insensitive" },
-          }
-        : {}),
-    },
-    select: { githubRepoId: true, owner: true, name: true },
-    distinct: ["githubRepoId"],
-  });
+  const targetRepo = repoFullName || (allowedRepos.length === 1 ? allowedRepos[0] : `${allowedRepos.length} repos`);
+
+  const repoConditions = allowedRepos
+    .map((full) => {
+      const parts = full.split("/");
+      if (parts.length !== 2) return null;
+      return {
+        owner: { equals: parts[0]!, mode: "insensitive" as const },
+        name: { equals: parts[1]!, mode: "insensitive" as const },
+      };
+    })
+    .filter((c): c is { owner: { equals: string; mode: "insensitive" }; name: { equals: string; mode: "insensitive" } } => c !== null);
+
+  const repos = repoConditions.length > 0
+    ? await prisma.projectRepo.findMany({
+        where: {
+          removedAt: null,
+          OR: repoConditions,
+        },
+        select: { githubRepoId: true, owner: true, name: true },
+        distinct: ["githubRepoId"],
+      })
+    : [];
 
   if (repos.length > 0) {
     await enqueueJobs(

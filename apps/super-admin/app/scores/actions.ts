@@ -32,19 +32,43 @@ export async function createManualScoreAdjustment(formData: FormData) {
 
   const idempotencyKey = `manual:${userId}:${seasonId}:${Date.now()}`;
 
-  // Create ScoreEvent record in the official scoring ledger
-  const scoreEvent = await prisma.scoreEvent.create({
-    data: {
-      userId,
-      seasonId,
-      kind: "ADJUSTMENT",
-      ruleKey: "manual:adjustment",
-      points: delta,
-      description: reason,
-      effectiveAt: new Date(),
-      idempotencyKey,
-    },
+  // Verify the season ledger is open (not finalized) and record the ScoreEvent atomically
+  const result = await prisma.$transaction(async (tx) => {
+    const rows = await tx.$queryRaw<{ finalizedAt: Date | null }[]>`
+      SELECT "finalizedAt" FROM "Season" WHERE id = ${seasonId} FOR SHARE
+    `;
+    if (rows.length === 0) {
+      return { error: { seasonId: ["Season does not exist."] } };
+    }
+    if (rows[0]!.finalizedAt !== null) {
+      return {
+        error: {
+          seasonId: ["The ledger for this season is finalized. No further score adjustments can be made."],
+        },
+      };
+    }
+
+    const scoreEvent = await tx.scoreEvent.create({
+      data: {
+        userId,
+        seasonId,
+        kind: "ADJUSTMENT",
+        ruleKey: "manual:adjustment",
+        points: delta,
+        description: reason,
+        effectiveAt: new Date(),
+        idempotencyKey,
+      },
+    });
+
+    return { scoreEvent };
   });
+
+  if ("error" in result) {
+    return { error: result.error };
+  }
+
+  const scoreEvent = result.scoreEvent;
 
   // Enqueue live leaderboard refresh and user rescore so scores update immediately
   await enqueueJobs([

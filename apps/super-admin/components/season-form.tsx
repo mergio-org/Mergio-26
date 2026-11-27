@@ -14,19 +14,23 @@ interface SeasonFormProps {
   };
 }
 
+function toIstDay(val?: Date | string | null): string {
+  if (!val) return "";
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return "";
+  return new Date(d.getTime() + 330 * 60_000).toISOString().slice(0, 10);
+}
+
 export function SeasonForm({ action, defaultValues }: SeasonFormProps) {
   const [pending, setPending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
-  const defaultStart = defaultValues?.codingStartsAt
-    ? new Date(defaultValues.codingStartsAt).toISOString().split("T")[0]
-    : "";
-  const defaultEnd = defaultValues?.codingEndsAt
-    ? new Date(defaultValues.codingEndsAt).toISOString().split("T")[0]
-    : "";
-  const defaultConfigStr = defaultValues?.scoringRules
-    ? JSON.stringify(defaultValues.scoringRules, null, 2)
-    : "{\n  \"levels\": {\n    \"BEGINNER\": 10,\n    \"INTERMEDIATE\": 25,\n    \"ADVANCED\": 50\n  }\n}";
+  const defaultStart = toIstDay(defaultValues?.codingStartsAt);
+  const defaultEnd = toIstDay(defaultValues?.codingEndsAt);
+  const defaultConfigStr =
+    defaultValues?.scoringRules !== undefined && defaultValues?.scoringRules !== null
+      ? JSON.stringify(defaultValues.scoringRules, null, 2)
+      : "{\n  \"levels\": {\n    \"BEGINNER\": 10,\n    \"INTERMEDIATE\": 25,\n    \"ADVANCED\": 50\n  }\n}";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

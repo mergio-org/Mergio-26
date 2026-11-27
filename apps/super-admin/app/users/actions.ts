@@ -32,7 +32,17 @@ export async function banUser(formData: FormData) {
 
   // Security: super admins cannot be banned directly
   if (before.isSuperAdmin || before.staffRole === "SUPER_ADMIN") {
-    return { error: { reason: ["Super admins cannot be banned. Demote their staff role first."] } };
+    return { error: { reason: ["Super admins cannot be moderated. Remove their staff role first."] } };
+  }
+
+  // Security: only super admins can ban organizers
+  const actor = await prisma.user.findUnique({
+    where: { id: admin.id },
+    select: { isSuperAdmin: true, staffRole: true },
+  });
+  const adminIsSuper = actor?.isSuperAdmin || actor?.staffRole === "SUPER_ADMIN";
+  if (before.staffRole === "ORGANIZER" && !adminIsSuper) {
+    return { error: { reason: ["Only super admins can moderate organizers."] } };
   }
 
   // Ban user and delete active sessions in one transaction so they are instantly signed out
@@ -61,7 +71,20 @@ export async function banUser(formData: FormData) {
 export async function unbanUser(userId: string) {
   const admin = await requireAdmin();
 
+  if (admin.id === userId) {
+    return { error: "You cannot perform moderation actions on your own account." };
+  }
+
   const before = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
+
+  const actor = await prisma.user.findUnique({
+    where: { id: admin.id },
+    select: { isSuperAdmin: true, staffRole: true },
+  });
+  const adminIsSuper = actor?.isSuperAdmin || actor?.staffRole === "SUPER_ADMIN";
+  if (before.staffRole === "ORGANIZER" && !adminIsSuper) {
+    return { error: "Only super admins can moderate organizers." };
+  }
 
   await prisma.user.update({
     where: { id: userId },

@@ -6,9 +6,11 @@ function toCsvRow(items: (string | number | boolean | null | undefined)[]): stri
   return items
     .map((item) => {
       if (item === null || item === undefined) return '""';
+      if (typeof item === "number" || typeof item === "boolean") {
+        return String(item);
+      }
       let str = String(item).replace(/"/g, '""');
-      // Prevent CSV formula injection (OWASP):
-      // If cell starts with '=', '+', '-', '@', '\t', or '\r', prefix with single quote "'"
+      // Prevent CSV formula injection (OWASP) on string values:
       if (/^[=+\-@\t\r]/.test(str)) {
         str = `'${str}`;
       }

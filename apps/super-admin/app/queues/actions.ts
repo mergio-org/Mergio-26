@@ -5,15 +5,7 @@ import { prisma } from "@repo/db";
 import { enqueueJobs } from "@/lib/queue";
 import { requireAdmin } from "@/lib/dal";
 import { writeAuditLog } from "@/lib/audit";
-
-function escapeHtml(text: string) {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+import { deliverAfterResponse, escapeHtml, queueEmail } from "@/lib/email";
 
 export async function approveRegistration(registrationId: string) {
   const admin = await requireAdmin();
@@ -34,7 +26,7 @@ export async function approveRegistration(registrationId: string) {
       : "You can submit your project from your dashboard."
   }`;
 
-  await prisma.$transaction(async (tx) => {
+  const emailId = await prisma.$transaction(async (tx) => {
     await tx.registration.update({
       where: { id: registrationId },
       data: {
@@ -44,17 +36,17 @@ export async function approveRegistration(registrationId: string) {
       },
     });
 
-    await tx.emailOutbox.create({
-      data: {
-        toEmail: registration.user.email,
-        toUserId: registration.user.id,
-        category: "registration-status",
-        subject,
-        text: `Hi ${registration.user.name},\n\n${body}\n\n${url}\n`,
-        html: `<p>Hi ${escapeHtml(registration.user.name)},</p><p>${escapeHtml(body)}</p><p><a href="${url}">Open your dashboard</a></p>`,
-      },
+    return queueEmail(tx, {
+      toEmail: registration.user.email,
+      toUserId: registration.user.id,
+      category: "registration-status",
+      subject,
+      text: `Hi ${registration.user.name},\n\n${body}\n\n${url}\n`,
+      html: `<p>Hi ${escapeHtml(registration.user.name)},</p><p>${escapeHtml(body)}</p><p><a href="${url}">Open your dashboard</a></p>`,
     });
   });
+
+  deliverAfterResponse([emailId]);
 
   // If mentor, trigger repo access check and user rescore via scoring queue
   if (registration.role === "MENTOR") {
@@ -98,7 +90,16 @@ export async function rejectRegistration(registrationId: string) {
   const subject = `Your Mergio ${roleName} registration`;
   const body = `Thanks for registering as a ${roleName} for Mergio. The team couldn't approve it this time. You can still take part as a contributor.`;
 
-  await prisma.$transaction(async (tx) => {
+  // Find assigned projects before transaction if mentor
+  let affectedProjects: { projectId: string }[] = [];
+  if (registration.role === "MENTOR") {
+    affectedProjects = await prisma.projectMentor.findMany({
+      where: { userId: registration.userId },
+      select: { projectId: true },
+    });
+  }
+
+  const emailId = await prisma.$transaction(async (tx) => {
     await tx.registration.update({
       where: { id: registrationId },
       data: {
@@ -108,17 +109,33 @@ export async function rejectRegistration(registrationId: string) {
       },
     });
 
-    await tx.emailOutbox.create({
-      data: {
-        toEmail: registration.user.email,
-        toUserId: registration.user.id,
-        category: "registration-status",
-        subject,
-        text: `Hi ${registration.user.name},\n\n${body}\n\n${url}\n`,
-        html: `<p>Hi ${escapeHtml(registration.user.name)},</p><p>${escapeHtml(body)}</p><p><a href="${url}">Open your dashboard</a></p>`,
-      },
+    // Revoke any project mentor attachments
+    if (registration.role === "MENTOR" && affectedProjects.length > 0) {
+      await tx.projectMentor.updateMany({
+        where: { userId: registration.userId },
+        data: { userId: null },
+      });
+    }
+
+    return queueEmail(tx, {
+      toEmail: registration.user.email,
+      toUserId: registration.user.id,
+      category: "registration-status",
+      subject,
+      text: `Hi ${registration.user.name},\n\n${body}\n\n${url}\n`,
+      html: `<p>Hi ${escapeHtml(registration.user.name)},</p><p>${escapeHtml(body)}</p><p><a href="${url}">Open your dashboard</a></p>`,
     });
   });
+
+  deliverAfterResponse([emailId]);
+
+  // If mentor, trigger revocation of access and rescore
+  if (registration.role === "MENTOR") {
+    await enqueueJobs([
+      { kind: "USER_RESCORE", payload: { userId: registration.userId } },
+      ...affectedProjects.map((row) => ({ kind: "MENTOR_ACCESS" as const, payload: { projectId: row.projectId } })),
+    ]);
+  }
 
   await writeAuditLog({
     actorId: admin.id,

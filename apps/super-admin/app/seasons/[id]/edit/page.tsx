@@ -75,10 +75,10 @@ export default async function EditSeasonPage({
                       Field: {log.field}
                     </p>
                     <p className="font-mono text-[11px] line-through" style={{ color: "var(--red)" }}>
-                      {JSON.stringify(log.before)}
+                      {log.before !== null && log.before !== undefined ? JSON.stringify(log.before) : "null"}
                     </p>
                     <p className="font-mono text-[11px]" style={{ color: "var(--green)" }}>
-                      {JSON.stringify(log.after)}
+                      {log.after !== null && log.after !== undefined ? JSON.stringify(log.after) : "null"}
                     </p>
                     <p className="mt-0.5 text-[10px]" style={{ color: "var(--dim)" }}>
                       {new Date(log.createdAt).toLocaleString()}
