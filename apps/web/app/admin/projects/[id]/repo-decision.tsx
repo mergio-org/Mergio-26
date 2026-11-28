@@ -1,9 +1,7 @@
 "use client";
 
-
 import { useActionState, useId, useTransition } from "react";
 import type { ReviewState } from "../actions";
-
 
 /** Accept or reject one repo added after approval. Rejecting needs a reason the PA will see. */
 export function RepoDecisionForm({
@@ -16,7 +14,6 @@ export function RepoDecisionForm({
   const busy = pending || submitting;
   const reasonId = useId();
 
-
   function decide(
     event: React.MouseEvent<HTMLButtonElement>,
     decision: "accept" | "reject",
@@ -28,7 +25,6 @@ export function RepoDecisionForm({
     data.set("decision", decision);
     startTransition(() => formAction(data));
   }
-
 
   if (state.done) {
     return (
@@ -67,3 +63,15 @@ export function RepoDecisionForm({
         >
           Accept repo
         </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          type="submit"
+          disabled={busy}
+          onClick={(e) => decide(e, "reject")}
+        >
+          Reject
+        </button>
+      </div>
+    </form>
+  );
+}
