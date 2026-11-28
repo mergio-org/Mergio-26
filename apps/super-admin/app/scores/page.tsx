@@ -2,7 +2,7 @@ import { requireAdmin } from "@/lib/dal";
 import { prisma } from "@repo/db";
 import { ScoreAdjustModal } from "@/components/score-adjust-modal";
 import Link from "next/link";
-import { Sparkles, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 
 export const metadata = { title: "Score Management" };
 

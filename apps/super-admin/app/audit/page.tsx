@@ -1,6 +1,6 @@
 import { requireAdmin } from "@/lib/dal";
 import { prisma } from "@repo/db";
-import { ScrollText, Filter } from "lucide-react";
+import { Filter } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = { title: "Audit Trail" };

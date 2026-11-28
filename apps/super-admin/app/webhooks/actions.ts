@@ -6,7 +6,22 @@ import { enqueueJobs, type Job } from "@/lib/queue";
 import { requireAdmin } from "@/lib/dal";
 import { writeAuditLog } from "@/lib/audit";
 
-function jobsFor(event: string, payload: any): Job[] {
+// The parts of a GitHub webhook payload we read. Same shape as in
+// apps/web/app/api/v1/webhooks/github/route.ts, which queues these jobs for live deliveries.
+type Payload = {
+  action?: string;
+  repository?: { id: number };
+  installation?: { id: number };
+  pull_request?: { number: number };
+  issue?: { number: number; pull_request?: unknown };
+  repositories?: { id: number }[];
+  repositories_added?: { id: number }[];
+  repositories_removed?: { id: number }[];
+};
+
+const ids = (list?: { id: number }[]) => (list ?? []).map((repo) => String(repo.id));
+
+function jobsFor(event: string, payload: Payload | null): Job[] {
   const repoId = payload?.repository ? String(payload.repository.id) : null;
   switch (event) {
     case "pull_request":
@@ -32,9 +47,9 @@ function jobsFor(event: string, payload: any): Job[] {
                 installationId: String(payload.installation.id),
                 action: payload.action,
                 githubRepoIds: [
-                  ...((payload.repositories || []).map((r: any) => String(r.id))),
-                  ...((payload.repositories_added || []).map((r: any) => String(r.id))),
-                  ...((payload.repositories_removed || []).map((r: any) => String(r.id))),
+                  ...ids(payload.repositories),
+                  ...ids(payload.repositories_added),
+                  ...ids(payload.repositories_removed),
                 ].sort(),
               },
             },
@@ -56,7 +71,7 @@ export async function replayDelivery(deliveryId: string) {
     where: { id: deliveryId },
   });
 
-  const jobs = jobsFor(delivery.event, delivery.payload as any);
+  const jobs = jobsFor(delivery.event, delivery.payload as Payload | null);
   if (jobs.length > 0) {
     await enqueueJobs(jobs);
   }

@@ -28,8 +28,9 @@ export async function GET(
   const searchParams = request.nextUrl.searchParams;
   const seasonId = searchParams.get("seasonId") || undefined;
 
-  let filename = `${type}-${Date.now()}.csv`;
-  let csvContent = "";
+  // Every branch below sets both, or returns early for an unknown type.
+  let filename: string;
+  let csvContent: string;
 
   if (type === "contributors") {
     filename = `contributors-${new Date().toISOString().split("T")[0]}.csv`;

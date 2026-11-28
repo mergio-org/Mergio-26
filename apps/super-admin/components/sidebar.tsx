@@ -209,6 +209,7 @@ export function Sidebar({
           }}
         >
           {user.image ? (
+            // eslint-disable-next-line @next/next/no-img-element -- remote GitHub avatar, no image loader configured
             <img
               src={user.image}
               alt={user.name}

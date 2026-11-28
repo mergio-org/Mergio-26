@@ -1,7 +1,7 @@
 import { requireAdmin } from "@/lib/dal";
 import { prisma } from "@repo/db";
 import { ReplayButton, ResyncRepoButton } from "@/components/webhook-action-buttons";
-import { CheckCircle2, AlertCircle, Clock, Webhook } from "lucide-react";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 
 export const metadata = { title: "Webhook Health" };
 

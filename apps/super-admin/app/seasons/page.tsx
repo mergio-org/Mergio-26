@@ -1,7 +1,7 @@
 import { requireAdmin } from "@/lib/dal";
 import { prisma } from "@repo/db";
 import Link from "next/link";
-import { Plus, Calendar, Sparkles } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export const metadata = { title: "Seasons & Events" };
 
