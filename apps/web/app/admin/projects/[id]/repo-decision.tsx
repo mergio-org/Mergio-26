@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
+import { useActionState, useId, useTransition } from "react";
 import type { ReviewState } from "../actions";
 
 /** Accept or reject one repo added after approval. Rejecting needs a reason the PA will see. */
@@ -12,6 +12,7 @@ export function RepoDecisionForm({
   const [state, formAction, pending] = useActionState(action, {});
   const [submitting, startTransition] = useTransition();
   const busy = pending || submitting;
+  const reasonId = useId();
 
   function decide(
     event: React.MouseEvent<HTMLButtonElement>,
@@ -43,11 +44,11 @@ export function RepoDecisionForm({
         </p>
       )}
       <div className="field">
-        <label htmlFor="reason" className="sr-only">
+        <label htmlFor={reasonId} className="sr-only">
           Reason (required to reject)
         </label>
         <textarea
-          id="reason"
+          id={reasonId}
           name="reason"
           rows={2}
           placeholder="Reason (required to reject; the project admin sees it)"
