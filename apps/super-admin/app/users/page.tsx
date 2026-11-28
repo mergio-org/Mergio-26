@@ -1,7 +1,7 @@
 import { requireAdmin } from "@/lib/dal";
 import { prisma } from "@repo/db";
 import Link from "next/link";
-import { Search, ShieldAlert, CheckCircle, Clock } from "lucide-react";
+import { Search, ShieldAlert, CheckCircle } from "lucide-react";
 
 export const metadata = { title: "Users Directory" };
 
@@ -90,6 +90,7 @@ export default async function UsersPage({ searchParams }: Props) {
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
                         {u.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element -- remote GitHub avatar, no image loader configured
                           <img
                             src={u.image}
                             alt={u.name}

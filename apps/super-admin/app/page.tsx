@@ -7,7 +7,6 @@ import {
   GraduationCap,
   Sparkles,
   ArrowRight,
-  ShieldCheck,
   Download,
   ScrollText,
 } from "lucide-react";

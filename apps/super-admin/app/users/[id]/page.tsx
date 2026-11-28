@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { BanButton } from "@/components/ban-button";
 import { RoleGrantButton } from "@/components/role-grant-button";
-import { ArrowLeft, GitPullRequest, Award, Shield, User } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 
 export const metadata = { title: "User Details" };
 
@@ -59,6 +59,7 @@ export default async function UserDetailPage({
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-4">
             {user.image ? (
+              // eslint-disable-next-line @next/next/no-img-element -- remote GitHub avatar, no image loader configured
               <img
                 src={user.image}
                 alt={user.name}
